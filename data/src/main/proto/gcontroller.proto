@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package geometry_types;
+import "base_types.proto";
+
+enum GTypeEnum {
+    ALL = 0;
+    POINT = 1;
+    POINT_CLOUD = 2;
+    LINE = 3;
+    POLYGON = 4;
+}
+
+
+message GPoint {
+    uint64 id = 1;
+    base_types.VectorFloat4 pos = 2;
+    base_types.VectorFloat4 color = 3;
+}
+
+message GVertex {
+    base_types.VectorFloat4 pos = 2;
+    base_types.VectorFloat4 color = 3;
+    base_types.VectorFloat2 tex_coords = 4;
+}
+
+message GTextureRGBA {
+    uint64 id = 1;
+    uint32 w = 2;
+    uint32 h = 3;
+    bytes pixels = 4;
+}
+
+message GPointCloud {
+    uint64 id = 1;
+    base_types.Matrix4x4 mat = 2;
+    repeated GPoint points = 3;
+}
+
+message GLine {
+    uint64 id = 1;
+    base_types.Matrix4x4 mat = 2;
+    repeated GVertex points = 3;
+}
+
+message GPolygon {
+    uint64 id = 1;
+    base_types.Matrix4x4 mat = 2;
+    repeated GVertex points = 3;
+    repeated uint32 indices = 4;
+    uint64 texture_id = 5;
+}
+
+message GDeleteItems {
+    GTypeEnum type = 1;
+    repeated uint64 ids = 2;
+}
+
+message GResetScene {
+    GTypeEnum type = 1;
+}
+
+message GAddItems {
+    repeated GTextureRGBA textures = 1;
+    repeated GPointCloud point_clouds = 2;
+    repeated GLine lines = 3;
+    repeated GPolygon polygons = 4;
+}
+
+
+message GCommandRequest {}
+message GCommandReply {
+    oneof command {
+        GAddItems array = 1;
+        GDeleteItems delete_command = 2;
+        GResetScene reset_command = 3;
+    }
+}
+
+
+service GControllerService {
+    rpc GCommandQueue (GCommandRequest) returns (stream GCommandReply) {};
+}
+

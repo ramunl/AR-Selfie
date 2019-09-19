@@ -1,0 +1,95 @@
+syntax = "proto3";
+import "base_types.proto";
+import "social.proto";
+package refinement;
+
+
+message BoundingBox {
+    base_types.GpsCoordinates min_point = 1;
+    base_types.GpsCoordinates max_point = 2;
+}
+
+
+message SessionDataForClustering {
+    string session_id = 1; //uuid
+    BoundingBox bbox = 2;
+}
+
+
+message MultisessionDataForClustering {
+    string multisession_id = 1; //uuid
+    BoundingBox bbox = 2;
+}
+
+
+message GetSessionsInRectReply {
+    oneof data {
+        SessionDataForClustering session = 1;
+        MultisessionDataForClustering multisession = 2;
+    }
+}
+
+
+message GetSessionsForRefinementRequest {
+    repeated string session_ids = 1; // multi- or simple sessions
+}
+
+
+message SessionForRefinement {
+    string session_id = 1; //uuid
+    repeated base_types.DataFrame data_frames = 2; // @timkov from server without ar_session
+    repeated base_types.AssetForDetection assets_for_detection = 3;
+    repeated base_types.DetectedAsset detected_assets = 4;
+    repeated social.Post posts = 9;
+    string telemetry_video_url = 5; // from SaveTelemetryVideo
+    double telemetry_video_start_timestamp = 6;
+    base_types.Matrix3x3 intrinsic_matrix = 7;
+    uint32 motion_fps = 8;
+}
+
+
+message SessionNode {
+    string session_id = 1;
+    base_types.Matrix4x4 multisession_to_session_transform = 2; // просто храним 
+}
+
+
+message AssetNode {
+    string asset_id = 1;
+    base_types.Matrix4x4 multisession_to_asset_transform = 2; 
+}
+
+
+message PostNode {
+    social.PostCompositeID id = 1;
+    base_types.Matrix4x4 multisession_to_post_transform = 2;
+}
+
+
+message MultisessionForRefinement {
+    string multisession_id = 1;
+    repeated SessionNode session_nodes = 2;
+}
+
+
+message GetSessionsForRefinementReply {
+    oneof data {
+        SessionForRefinement session = 1;
+        MultisessionForRefinement multisession = 2;
+    }
+}
+
+
+message Multisession {
+    string multisession_id = 1; // + update (recreate)
+    repeated SessionNode session_nodes = 2;
+    repeated AssetNode asset_nodes = 3;
+    repeated PostNode post_nodes = 4;
+}
+
+
+service RefinementService {
+    rpc GetSessionsInRect (BoundingBox) returns (stream GetSessionsInRectReply) {};
+    rpc GetSessionsForRefinement (GetSessionsForRefinementRequest) returns (stream GetSessionsForRefinementReply) {};
+    rpc SaveMultisession(Multisession) returns (base_types.EmptyReply) {};
+}

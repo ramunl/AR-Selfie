@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/ar_post_height"
+    android:padding="16dp">
+
+    <RelativeLayout
+        android:id="@+id/postContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/cell_frame_bg_white">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/postSnapshotImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:riv_border_color="#454F63"
+            app:riv_border_width="@dimen/post_frame_width"
+            app:riv_corner_radius="@dimen/post_corner_radius"
+            app:riv_mutate_background="true" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="6dp"
+            android:background="@drawable/avatar_bg">
+
+            <ImageView
+                android:id="@+id/avatarImg"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="14dp"
+                android:src="@drawable/avatar" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_toEndOf="@+id/avatarImg"
+                android:text="Ammy\nGreen" />
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/postEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="26dp"
+            android:layout_marginEnd="26dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/post_edit_text_frame_bg_white"
+            android:gravity="top"
+            android:hint="Type something here.."
+            android:minHeight="40dp"
+            android:paddingStart="16dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="3dp"
+            tools:text="asdasdasdasdasdddddddddddddddddd" />
+    </RelativeLayout>
+
+</RelativeLayout>

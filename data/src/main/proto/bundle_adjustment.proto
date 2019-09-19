@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package bundle_adjustment;
+import "base_types.proto";
+
+
+
+
+message BA_Point3d {
+    base_types.VectorFloat3 pos = 1;
+    repeated BA_FeaturePoint feature_points = 2;
+}
+
+message BA_FeaturePoint {
+    uint32 index = 1;
+    uint32 index_frame = 2;
+    base_types.FeaturePoint feature_point = 3;
+}
+
+
+message BA_Frame {
+    uint32 index = 1;
+    base_types.Matrix4x4 transform = 2;
+}
+
+
+message BA_Scene {
+    string id = 1;
+    base_types.GpsCoordinates coordinates = 2;
+    repeated BA_Point3d points_3d = 3;
+    repeated BA_Frame frames = 4;
+    base_types.BoundingBox bbox = 5;
+    string label=6;
+}
+
+message GetScenesRequest {
+    base_types.GpsCoordinates coordinates = 1;
+    uint32 radius = 2;
+}
+
+message GetScenesReply {
+    repeated string scenes_s3_urls = 1;
+}
+
+service SceneStorageService {
+    rpc UploadScene (BA_Scene) returns (base_types.EmptyReply);
+    rpc GetScenes (GetScenesRequest) returns (GetScenesReply);
+}

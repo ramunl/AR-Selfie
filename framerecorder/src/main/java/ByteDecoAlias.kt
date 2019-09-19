@@ -1,0 +1,1 @@
+typealias DecoFrame = org.bytedeco.javacv.Frame

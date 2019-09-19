@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package auth;
+
+
+enum SexEnum {
+	female = 0;
+    male = 1;
+}
+
+
+message Phone {
+	string phone = 1;
+}
+
+
+message SmsCode {
+	string code = 1;
+}
+
+
+message UserAvatar {
+	string url = 1;
+}
+
+
+message UserProfile {
+	uint64 id = 1;
+	string email = 2;
+	Phone phone = 3;
+	uint32 policy_agreeded = 4;
+	SexEnum sex = 5;
+	string name = 6;
+	string surname = 7;
+	string birthday = 8;
+	uint32 age = 9;
+	string username = 10;
+	UserAvatar ava = 11;
+}
+
+
+message AuthRequest {
+	Phone phone = 1;
+	SmsCode code = 2;
+}
+
+
+message AuthReply {
+	string token = 1;
+	bool is_new_user = 2;
+	UserProfile profile = 3;
+}
+
+
+message SendConfirmationCodeRequest {
+	Phone phone = 1;
+	string via = 2;
+}
+
+
+message SendConfirmationCodeReply {
+	string carrier = 1;
+	bool is_cellphone = 2;
+	string message = 3;
+	uint32 seconds_to_expire = 4;
+	string uuid = 5;
+	bool success = 6;
+}
+
+
+message UserList {
+	repeated UserProfile users = 1;
+}
+
+
+service ARMAuthService {
+    rpc Auth (AuthRequest) returns (AuthReply) {};
+    rpc SendConfirmationCode (SendConfirmationCodeRequest) returns (SendConfirmationCodeReply) {};
+}
+
+
+message AGetUsersRequest {
+	string username_or_phone = 1;
+}
+
+
+service ARMAuthAdminService {
+    rpc AGetUsers (AGetUsersRequest) returns (UserList) {};
+}

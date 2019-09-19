@@ -1,0 +1,97 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">CyberstarAr</string>
+    <string name="try_again">Try again?</string>
+    <string name="camera_permission_denied">Camera permission is needed to run this application</string>
+    <string name="storage_permission_denied">Write file permission is needed to write file</string>
+    <string name="location_permission_denied">Location permission is needed to collect session data</string>
+    <string name="saving">saving..</string>
+    <string name="fps_d">FPS: %d</string>
+    <string name="timer_d">timer:%d</string>
+    <string name="ar_frames_d">ar frames:%d</string>
+    <string name="frames_d">frames:%d</string>
+    <string name="plane_d">planes: %d</string>
+
+    <string name="start_record">Start session recording</string>
+    <string name="save_record">Save session</string>
+    <string name="clean_world">Clean world</string>
+    <string name="load_world">Load session</string>
+
+    <string name="title_activity_camera">CameraActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="telemetry_off">Telemetry Off</string>
+    <string name="telemetry_on">Telemetry On</string>
+    <string name="telemetry_control">Telemetry</string>
+    <string name="channel_connected">Channel open</string>
+    <string name="channel_closed">Channel closed</string>
+    <string name="no_planes_found">no planes found\n</string>
+    <string name="video_record">Video record</string>
+
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
+    <string name="description_info">Info</string>
+    <string name="permission_request">This sample needs permission for camera and audio recording.</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="startSession">Start session</string>
+    <string name="stopSession">Stop session</string>
+    <string name="verifying_phone_number">Verifying phone number...</string>
+    <string name="verifying_the_code">Verifying the code</string>
+    <string name="cancel">cancel</string>
+    <string name="posting">Posting.</string>
+    <string name="post_in_ar">Post in Ar</string>
+    <string name="quick_post">Quick post</string>
+    <string name="save">save</string>
+    <string name="add_title">Add title..</string>
+
+    <string name="application_name">ExoPlayer</string>
+
+    <string name="track_selection_title">Select tracks</string>
+
+    <string name="unexpected_intent_action">Unexpected intent action: <xliff:g id="action">%1$s</xliff:g></string>
+
+    <string name="error_cleartext_not_permitted">Cleartext traffic not permitted</string>
+
+    <string name="error_generic">Playback failed</string>
+
+    <string name="error_unrecognized_abr_algorithm">Unrecognized ABR algorithm</string>
+
+    <string name="error_unrecognized_stereo_mode">Unrecognized stereo mode</string>
+
+    <string name="error_drm_not_supported">Protected content not supported on API levels below 18</string>
+
+    <string name="error_drm_unsupported_scheme">This device does not support the required DRM scheme</string>
+
+    <string name="error_drm_unknown">An unknown DRM error occurred</string>
+
+    <string name="error_no_decoder">This device does not provide a decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
+
+    <string name="error_no_secure_decoder">This device does not provide a secure decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
+
+    <string name="error_querying_decoders">Unable to query device decoders</string>
+
+    <string name="error_instantiating_decoder">Unable to instantiate decoder <xliff:g id="decoder_name">%1$s</xliff:g></string>
+
+    <string name="error_unsupported_video">Media includes video tracks, but none are playable by this device</string>
+
+    <string name="error_unsupported_audio">Media includes audio tracks, but none are playable by this device</string>
+
+    <string name="sample_list_load_error">One or more sample lists failed to load</string>
+
+    <string name="ima_not_loaded">Playing sample without ads, as the IMA extension was not loaded</string>
+
+    <string name="download_start_error">Failed to start download</string>
+
+    <string name="download_playlist_unsupported">This demo app does not support downloading playlists</string>
+
+    <string name="download_drm_unsupported">This demo app does not support downloading protected content</string>
+
+    <string name="download_scheme_unsupported">This demo app only supports downloading http streams</string>
+
+    <string name="download_ads_unsupported">IMA does not support offline ads</string>
+
+    <string name="prefer_extension_decoders">Prefer extension decoders</string>
+
+    <string name="random_abr">Enable random ABR</string>
+    <string name="test_opencv">test OpenCV</string>
+
+</resources>

@@ -1,0 +1,10 @@
+<resources>
+    <dimen name="post_edit_text_padding">4dp</dimen>
+    <dimen name="post_corner_radius">48dp</dimen>
+    <dimen name="post_frame_width">5dp</dimen>
+    <dimen name="post_frame_padding">10dp</dimen>
+    <dimen name="ar_post_height">343dp</dimen>
+    <dimen name="ar_post_width">343dp</dimen>
+
+    <dimen name="cell_corner_radius">28dp</dimen>
+</resources>

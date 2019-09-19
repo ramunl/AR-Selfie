@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <size android:width="@dimen/rec_btn_bg_size" android:height="@dimen/rec_btn_bg_size"/>
+            <solid android:color="@color/recButtonBg"/>
+        </shape>
+    </item>
+</layer-list>

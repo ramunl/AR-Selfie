@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+    <include layout="@layout/layout_record_view"
+             android:id="@+id/recordLayout"/>
+
+
+    <include layout="@layout/fragment_post_edit"
+             android:visibility="gone"
+             android:id="@+id/postEditLayout"/>
+
+
+    <include layout="@layout/fragment_post_preview_temp"
+             android:visibility="gone"
+             android:id="@+id/postSendLayout"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

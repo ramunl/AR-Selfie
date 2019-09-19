@@ -1,0 +1,294 @@
+syntax = "proto3";
+
+package social;
+import "base_types.proto";
+// import "validate.proto";
+
+
+
+enum PostTypeEnum {
+	undefined_post_type = 0;
+    original = 1;
+    repost = 2;
+}
+
+
+message PostCompositeID {
+	uint64 server_id = 1;
+	uint64 wall_id = 2;
+	uint64 post_id = 3;
+}
+
+
+// Многослойный набор картинок поста, для первой версии будут png'шками, которые в AR рисуются друг над другом
+// Потом могут превратиться в 3d-модели со скриптами анимаций, шейдерами и т.п.
+message ARPoster {
+	repeated string layout_images_urls = 1;
+	base_types.Model3d model = 2;
+}
+
+// Poster от ARPoster будет отличаться тем, что первый будет оставаться картинкой для соцсети, второй будет объектом
+// 3d-сцены в AR-режиме
+message Poster {
+	string image_url = 1;
+    string background_color = 2;
+}
+
+
+message TextPostContent {
+	base_types.RichText text_object = 1;
+}
+
+
+message AudioPostContent {
+	base_types.Audio audio_object = 1;
+}
+
+
+message PhotoPostContent {
+	base_types.Photo photo_object = 1;
+}
+
+
+message VideoPostContent {
+	base_types.Video video_object = 1;
+	base_types.Photo video_preview = 2; // jpg/png/gif/webm/mp4 1fps
+}
+
+
+message PostContent { // обертка для полиморфизма контента
+	oneof content {
+		TextPostContent text = 1;
+		PhotoPostContent photo = 2;
+		AudioPostContent audio = 3;
+		VideoPostContent video = 4;
+	}
+}
+
+message ShortUserProfile {
+	uint64 id = 1;
+	string name = 2;
+	string full_name = 3;
+	string avatar_url = 4;
+	string username = 5;
+	base_types.Photo avatar = 6;
+}
+
+
+message OriginalID {
+	PostCompositeID original_id = 1;
+	PostCompositeID parent_id = 2;
+}
+
+
+message Post {
+	PostCompositeID id = 1;
+	ShortUserProfile user = 2; //при создании поста может быть пустым, но при загрузке нужен
+	string title = 3; // [(validate.rules).string.max_len = 72]; //max_len = 72 unicode points (with emojies)
+	base_types.GpsCoordinates coordinates = 4;
+	PostTypeEnum post_type = 5;
+	PostContent content = 6;
+	base_types.Matrix4x4 post_transform = 7; //TODO
+	Poster poster = 8;
+	ARPoster ar_poster = 9;
+	OriginalID original_id = 10;
+	uint64 likes_count = 11;
+	double created = 12;
+	double updated = 13;
+	bool is_quick_post = 14;
+	uint64 views_count = 15;
+    uint32 scale_variant = 16; // 1, 2, 3 or 4, where 1 - 1x1, 2 - 2x2, 3 - 2x4, 4 - 4x8
+	uint32 comments_node_id = 17;
+	uint32 likes_node_id = 18;
+	bool is_liked = 19;
+	bool is_quest_post = 20;
+	string google_cloud_anchors_room_id = 21; //fallback для Android, если не получится вовремя со своим позиционированием в мероприятиях с размещением 3d-моделей
+
+}
+
+
+message CreatePostRequest {
+    string title = 1;
+    PostTypeEnum post_type = 2;
+    PostContent content = 3;
+    base_types.GpsCoordinates coordinates = 4;
+    PostCompositeID extra_id = 5;
+
+	Poster poster = 6;
+	ARPoster ar_poster = 7;
+	base_types.Matrix4x4 post_transform = 8;
+	uint32 frame_index = 19; // индекс кадра, для которого мы post_transform берем
+
+    PostVisibility post_visibility = 9;
+    repeated uint64 target_users = 10;
+    repeated uint64 target_chats = 11;
+    uint64 limited_time = 12;
+    bool disappear_after_view = 13;
+    bool only_in_ar = 14;
+    repeated string target_phones = 15;
+	bool is_quick_post = 16;
+	uint32 scale_variant = 17; // 1, 2, 3 or 4, where 1 - xs, 4 - xl
+	bool is_quest_post = 18;
+	string google_cloud_anchors_room_id = 20; //fallback для Android, если не получится вовремя со своим позиционированием в мероприятиях с размещением 3d-моделей
+	// string associated_worldmap_id = 19;
+    
+}
+
+
+enum PostVisibility {
+   all = 0;
+   all_followers = 1;
+   certain_chats = 2;
+}
+
+
+message DeletePostRequest {
+	PostCompositeID id = 1;
+}
+
+
+message GetWallPostIdsRequest {
+	uint64 wall_id = 1;
+}
+
+message PostList {
+	repeated Post post_list = 1;
+}
+
+
+message PostIdList {
+	repeated PostCompositeID post_list = 1;
+}
+
+
+
+message SBaseReply {}
+message SBaseRequest {}
+
+
+message WallID {
+    uint64 wall_id = 1;
+}
+
+
+message FollowerID {
+    uint64 follower_id = 1;
+}
+
+
+message SUserIDs {
+    repeated uint64 ids = 1;
+}
+
+	
+message GetPostsRequest {
+    PostIdList ids = 1;
+}
+
+message FilterQuestsPostsRequest {
+    PostIdList ids = 1;
+}
+
+
+message AddLikeToPostRequest {
+	PostCompositeID cpost_id = 1;
+}
+
+
+message DeleteLikeFromPostRequest {
+	PostCompositeID cpost_id = 1;
+	uint32 likes_node_id = 2;
+}
+
+
+message GetLikersFromPostRequest {
+	PostCompositeID cpost_id = 1;
+	uint64 likes_node_id = 2;
+}
+
+message PostViewRequest {
+	PostCompositeID cpost_id = 1;
+}
+
+message PostIdRequest {
+	PostCompositeID cpost_id = 1;
+}
+
+message RRequest {
+	base_types.GpsCoordinates coordinates = 1;
+    uint32 radius = 2; //in meters
+}
+
+enum ReportPostTypeEnum {
+	inappropriate = 0;
+    spam = 1;
+    other = 2;
+}
+
+message ReportPostRequest {
+	PostCompositeID cpost_id = 1;
+	ReportPostTypeEnum r_type = 2;
+    string comment = 3;
+}
+
+enum ModeratePostTypeEnum {
+	not_seen = 0;
+    approved = 1;
+    rejected = 2;
+}
+
+message ModeratePostRequest {
+	PostCompositeID cpost_id = 1;
+	ReportPostTypeEnum p_type = 2;
+}
+
+service ARMSocialService {
+
+    rpc CreatePost (CreatePostRequest) returns (Post) {};
+    rpc DeletePost (DeletePostRequest) returns (SBaseReply) {};
+    rpc GetWallPostIds (GetWallPostIdsRequest) returns (PostIdList);
+    rpc GetFeedPostIds (SBaseRequest) returns (PostIdList);
+
+    rpc ReportPost (ReportPostRequest) returns (SBaseReply);
+	rpc ModeratePost (ModeratePostRequest) returns (SBaseReply);
+
+	rpc GetPrivateFeedPostIds (SBaseRequest) returns (PostIdList);
+	rpc GetGeneralFeedPostIds (SBaseRequest) returns (PostIdList);
+	rpc GetMyPostIds (SBaseRequest) returns (PostIdList);
+	// geo queries
+	rpc GetPrivatePostIdsInGeoRadius (RRequest) returns (PostIdList);
+	rpc GetGeneralPostIdsInGeoRadius (RRequest) returns (PostIdList);
+	rpc GetMyPostIdsInGeoRadius (RRequest) returns (PostIdList);
+	// end geo queries
+
+    rpc GetPosts (GetPostsRequest) returns (PostList);
+
+    rpc Subscribe (WallID) returns (SBaseReply);
+    rpc UnSubscribe (WallID) returns (SBaseReply);
+    rpc GetFollowersIds (WallID) returns (SUserIDs);
+    rpc GetFollowingIds (FollowerID) returns (SUserIDs);
+
+    rpc AddLikeToPost (AddLikeToPostRequest) returns (SBaseReply);
+    rpc DeleteLikeFromPost (DeleteLikeFromPostRequest) returns (SBaseReply);
+    rpc GetLikersFromPost (GetLikersFromPostRequest) returns (SUserIDs);
+	rpc PostView (PostViewRequest) returns (SBaseReply);
+
+    rpc HeathCheck (base_types.HealthCheckRequest) returns (base_types.HeathCheckReply);
+	// rpc MarkPostAsQuest (PostIdRequest) returns (SBaseReply);
+	rpc FilterQuestPosts (FilterQuestsPostsRequest) returns (PostIdList);
+	rpc AdminCommand(base_types.AdminCommandRequest) returns (base_types.AdminCommandReply);
+}
+
+
+message GetPostsByAdminRequest {
+	SUserIDs ids = 1;
+
+	uint64 offset = 1000;
+}
+
+
+service ARMSocialAdminService {
+	rpc GetPostsByAdmin (GetPostsByAdminRequest) returns (PostList);
+
+}
+

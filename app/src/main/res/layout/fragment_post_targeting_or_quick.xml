@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/targetingScreen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/closePostingScreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="16dp"
+        android:src="@drawable/back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ImageButton
+        android:id="@+id/confirmArPostCreateBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="48dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/posting_in_ar_image_drawable"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/progressView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/semi_dark"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true" />
+
+            <TextView
+                style="@style/PostingTextViewStyle"
+                android:text="@string/posting" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/tryAgainView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/semi_dark"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/attention" />
+
+            <TextView
+                android:id="@+id/errorMessage"
+                style="@style/PostingTextViewStyle"
+                tools:text="Internet connection error has occured." />
+
+            <TextView
+                android:id="@+id/tryAgain"
+                style="@style/PostingTextViewStyle"
+                android:textStyle="bold"
+                tools:text="Tap to try again" />
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/cancelPostingInAr"
+            style="@style/CancelButtonStyle"
+            android:layout_alignParentBottom="true"
+            android:text="@string/cancel" />
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

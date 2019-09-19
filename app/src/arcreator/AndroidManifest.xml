@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:networkSecurityConfig="@xml/network_security_config"
+        tools:node="merge">
+        <meta-data
+            android:name="com.google.android.ar.API_KEY"
+            android:value="AIzaSyBM1bWg5NznQ_NcHJNgSUsj45hHfH8_330" />
+    </application>
+</manifest>

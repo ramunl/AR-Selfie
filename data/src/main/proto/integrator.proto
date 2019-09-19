@@ -1,0 +1,21 @@
+syntax = "proto3";
+import "base_types.proto";
+
+package interactive;
+
+
+message GetModelsListReply {
+    repeated base_types.Model3d models = 1;
+}
+
+
+message DeleteModelRequest {
+    string model_id = 1;
+}
+
+
+service ModelRegistryService {
+    rpc UploadModel (base_types.Model3d) returns (base_types.EmptyReply) {};
+    rpc GetModelsList (base_types.EmptyRequest) returns (GetModelsListReply) {};
+    rpc DeleteModel (DeleteModelRequest) returns (base_types.EmptyReply) {};
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content"
+              android:layout_height="wrap_content" android:orientation="vertical">
+    <TextView
+            android:text="@string/fps_d"
+            android:id="@+id/currentFPS"
+            style="@style/LabelStyle"/>
+
+    <TextView
+            android:text="@string/timer_d"
+            android:id="@+id/captureTimer"
+            style="@style/LabelStyle"/>
+
+    <TextView
+            android:text="@string/ar_frames_d"
+            android:id="@+id/arFramesCaptured"
+            style="@style/LabelStyle"/>
+
+    <TextView
+            android:text="@string/frames_d"
+            android:id="@+id/framesCaptured"
+            style="@style/LabelStyle"/>
+
+    <TextView
+            android:text="@string/plane_d"
+            android:id="@+id/planesNumCaptured"
+            style="@style/LabelStyle"/>
+</LinearLayout>

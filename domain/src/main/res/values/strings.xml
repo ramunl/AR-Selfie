@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">domain</string>
+    <string name="network_error">Check your internet connection!</string>
+    <string name="searching_planes">Searching for surfaces...</string>
+    <string name="no_planes_found">no planes found\n</string>
+
+    <!-- Strings used in Snackbar messages -->
+    <string name="snackbar_anchor_placed">Now hosting anchor...</string>
+    <string name="snackbar_arcore_unavailable">Please install ARCore.</string>
+    <string name="snackbar_arcore_too_old">Please update ARCore.</string>
+    <string name="snackbar_arcore_sdk_too_old">Please update the app with a newer version of the ARCore SDK.</string>
+    <string name="snackbar_arcore_exception">This device does not support ARCore.</string>
+    <string name="snackbar_camera_unavailable">Camera unavailable. Please restart the app.</string>
+    <string name="snackbar_cloud_id_shared">The anchor ID was shared via Firebase.</string>
+    <string name="snackbar_dismiss">Dismiss</string>
+    <string name="snackbar_firebase_error">There was a Firebase Error. Please check Logcat for more details.</string>
+    <string name="snackbar_host_error">Hosting Error: %1$s</string>
+    <string name="snackbar_initial_message">Please select Host or Resolve to continue.</string>
+    <string name="snackbar_on_host">Now in Hosting Mode. Press Cancel to Exit.</string>
+    <string name="snackbar_on_resolve">Now in Resolving Mode. Press Cancel to Exit.</string>
+    <string name="snackbar_resolve_error">Resolving Error: %1$s</string>
+    <string name="snackbar_resolve_success">The anchor was successfully resolved.</string>
+    <string name="snackbar_room_code_available">The room code is now available. Please place an anchor to host.</string>
+</resources>

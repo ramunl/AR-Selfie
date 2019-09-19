@@ -1,0 +1,6 @@
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+//apply from: '../maven_push.gradle'

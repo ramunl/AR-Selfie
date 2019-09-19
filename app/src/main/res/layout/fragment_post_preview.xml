@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/arPostPreviewLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <ImageView
+        android:id="@+id/photoPreview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/closePreviewScreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="16dp"
+        android:src="@drawable/back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <EditText
+        android:background="@null"
+        android:textColorHint="@color/white"
+        android:textColor="@color/white"
+        android:layout_margin="48dp"
+        android:textSize="17sp"
+        android:id="@+id/titleEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/add_title"
+        app:layout_constraintBottom_toTopOf="@+id/savePostBtn"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <include
+        android:id="@+id/savePostBtn"
+        layout="@layout/layout_post_btn_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <include
+        android:id="@+id/targetingModeBtn"
+        layout="@layout/layout_post_btn_targeting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <include
+        android:id="@+id/quickPostBtn"
+        layout="@layout/layout_post_btn_quick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

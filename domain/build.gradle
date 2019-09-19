@@ -1,0 +1,26 @@
+dependencies {
+    implementation project(':openCVLibrary')
+    implementation project(':opencvwrapper')
+    implementation project(':data')
+    implementation project(':math')
+    // Obj - a simple Wavefront OBJ file loader
+    // https://github.com/javagl/Obj
+    implementation 'de.javagl:obj:0.2.1'
+    implementation project(':common')
+    implementation project(':framerecorder')
+    implementation project(':uxscenform')
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'com.google.firebase:firebase-database:19.0.0'
+}
+
+
+sceneform.asset('sampledata/models/andy.obj',
+        'default',
+        'sampledata/models/andy.sfa',
+        'src/main/res/raw/andy')
+
+
+sceneform.asset('sampledata/models/tower/tower.fbx',
+        'default',
+        'sampledata/models/tower/tower.sfa',
+        'src/main/res/raw/tower')

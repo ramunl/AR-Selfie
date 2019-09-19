@@ -1,0 +1,174 @@
+syntax = "proto3";
+import "base_types.proto";
+import "social.proto";
+
+package quest;
+
+
+message ActiveQuestRequest {
+	base_types.GpsCoordinates coordinates = 1;
+}
+
+
+message CreateQuestRequest {
+	string title = 1;
+	social.PostIdList post_ids = 2;
+
+	QuestType quest_type = 3;
+	string image_url = 4;
+	string description = 5;
+
+	uint64 quest_score = 6;
+}
+
+
+message CreateQuestReply {
+	uint32 id = 1;
+}
+
+
+message DeleteQuestRequest {
+	uint32 quest_id = 1;
+}
+
+
+message ActiveQuestReply {
+    repeated QuestPost quest_posts = 1;
+}
+
+
+message PostFoundRequest {
+    social.PostCompositeID found_post_id = 1;
+    base_types.GpsCoordinates coordinates = 2;
+}
+
+
+message QuestPost {
+	social.PostCompositeID post_id = 1;
+	uint32 quest_id = 2;
+	bool is_found = 3;
+
+	string title = 4;
+	string description = 5;
+	string image_url = 6;
+
+	uint64 ordering = 7;
+
+	social.Post post = 200; // for admin
+}
+
+
+message AddPostToQuestRequest {
+	social.PostCompositeID post_id = 1;
+	uint32 quest_id = 2;
+	string title = 3;
+	string description = 4;
+
+	string image_url = 7;
+	uint64 ordering = 8;
+}
+
+
+enum QuestType {
+	CHAOTIC = 0;
+	CHAIN = 1;
+}
+
+
+message Quest {
+	uint64 id = 1;
+	QuestType type = 2;
+	string title = 3;
+	string description = 4;
+
+	repeated QuestPost posts = 5;
+	uint64 quest_score = 6;
+	string image_url = 7;
+
+	bool active = 8;
+}
+
+
+message GetQuestsRequest {
+	base_types.GpsCoordinates coordinates = 1;
+
+}
+
+
+message GetQuestsReply {
+	repeated Quest quests = 1;
+}
+
+
+service QuestService {
+	// TODO: DEPRECATED!
+	rpc GetActiveQuest (ActiveQuestRequest) returns (ActiveQuestReply) {};
+
+	rpc GetQuests (GetQuestsRequest) returns (GetQuestsReply) {}
+	rpc PostFound (PostFoundRequest) returns (base_types.EmptyReply) {};
+
+	rpc CreateQuest (CreateQuestRequest) returns (CreateQuestReply) {};
+	rpc AddPostToQuest (AddPostToQuestRequest) returns (base_types.EmptyReply) {};
+	rpc DeleteQuest (DeleteQuestRequest) returns (base_types.EmptyReply) {};
+}
+
+
+message AGetQuestsRequest {
+
+}
+
+
+message AGetQuestDetailsRequest {
+	uint64 id = 1;
+}
+
+
+message AGetPostFoundsRequest {
+	uint64 quest_id = 1;
+}
+
+
+message PostFoundItem {
+	uint64 quest_id = 1;
+	social.PostCompositeID post_id = 2;
+	base_types.GpsCoordinates coordinates = 3;
+	uint64 user_id = 4;
+	uint64 found_date = 5;
+}
+
+
+message QuestFinishedItem {
+	uint64 quest_id = 1;
+	uint64 user_id = 2;
+	uint64 finished_date = 3;
+}
+
+
+message AGetPostFoundsReply {
+	repeated PostFoundItem founds = 1;
+}
+
+
+message AEditQuestRequest {
+	uint64 id = 1;
+	bool active = 2;
+}
+
+
+message AGetQuestFinishedRequest {
+	uint64 quest_id = 1;
+}
+
+
+message AGetQuestFinishedReply {
+	repeated QuestFinishedItem items = 1;
+}
+
+
+service QuestAdminService {
+	rpc AGetQuests (AGetQuestsRequest) returns (GetQuestsReply) {};
+	rpc AGetQuestDetails (AGetQuestDetailsRequest) returns (Quest) {};
+	rpc AGetPostFounds (AGetPostFoundsRequest) returns (AGetPostFoundsReply) {};
+	rpc AEditQuest (AEditQuestRequest) returns (base_types.EmptyReply) {};
+	rpc AGetQuestFinished (AGetQuestFinishedRequest) returns (AGetQuestFinishedReply) {};
+}

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/switchCam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:src="@drawable/toggle_cam"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <RelativeLayout
+        android:id="@+id/photoVideoBtn"
+        android:layout_width="@dimen/rec_btn_bg_size"
+        android:layout_height="@dimen/rec_btn_bg_size"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:longClickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <include
+            android:id="@+id/videoBtn"
+            layout="@layout/video_record_button" />
+
+        <include
+            android:id="@+id/photoBtn"
+            layout="@layout/layout_record_photo_btn" />
+
+    </RelativeLayout>
+
+    <Button
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/testPost"
+        style="@style/ButtonStyle"
+        android:text="Open Video"
+        android:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

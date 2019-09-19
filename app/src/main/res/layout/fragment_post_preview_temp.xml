@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             android:id="@+id/arPostPreviewLayout"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/previewScreen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <ImageView
+                android:id="@+id/photoPreview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        <ImageView
+                android:padding="16dp"
+                android:src="@drawable/back"
+                android:id="@+id/closePreviewScreen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+
+        <include layout="@layout/layout_post_edit_btn"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_margin="8dp"
+                 app:layout_constraintEnd_toEndOf="parent"
+                 app:layout_constraintTop_toTopOf="parent"/>
+
+
+        <include layout="@layout/fragment_post_edit"/>
+
+
+        <include layout="@layout/layout_post_btn_targeting"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_margin="48dp"
+                 app:layout_constraintStart_toStartOf="parent"
+                 app:layout_constraintEnd_toEndOf="parent"
+                 app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+        <include layout="@layout/layout_post_btn_quick"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_margin="48dp"
+                 app:layout_constraintEnd_toEndOf="parent"
+                 app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:visibility="gone"
+            android:id="@+id/targetingScreen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+        <ImageView
+                android:padding="16dp"
+                android:src="@drawable/back"
+                android:id="@+id/closePostingScreen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+        <ImageView
+                android:layout_margin="48dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:id="@+id/confirmArPostCreateBtn"
+                android:src="@drawable/confirm_ar_post"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

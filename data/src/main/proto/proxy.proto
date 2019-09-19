@@ -1,0 +1,168 @@
+syntax = "proto3";
+import "base_types.proto";
+import "social.proto";
+
+package proxy;
+
+
+message BaseReply {}
+message BaseRequest {}
+
+// DEPRECATED! TODO: remove
+message SessionFinalData {
+    base_types.ARSessionFrame result_ar_session = 1; // deprecated
+    double video_start_timestamp = 2; // deprecated, moved to SessionHeadData
+    base_types.Matrix3x3 intrinsic_matrix = 3; // deprecated, moved to SessionHeadData
+    uint32 motion_fps = 4; // deprecated, moved to SessionHeadData
+    double session_start_timestamp = 5; // deprecated, moved to SessionHeadData
+    double session_end_timestamp = 6; // deprecated
+}
+
+
+message SessionHeadData {
+    double video_start_timestamp = 2;
+    base_types.Matrix3x3 intrinsic_matrix = 3;
+    uint32 motion_fps = 4;
+    double session_start_timestamp = 5;
+    uint64 user_id = 8;
+
+    string device_model = 6;
+    string device_os = 7;
+    uint32 frame_index = 9;
+    bool is_detail_features_session = 10;
+}
+
+
+message LoadWorldRequest {
+    base_types.GpsCoordinates coordinates = 1;
+
+    //TODO: этот фрейм отсылается с сервера, поэтому нужно cюда прокидывать при запросах
+    uint32 frame_index = 2;
+}
+
+
+message LoadWorldReply {
+    repeated base_types.AssetForDetection assets = 1;
+    repeated social.Post posts = 2;
+    string session_id = 3;
+    double session_last_updated_timestamp = 4;
+    double send_to_client_timestamp = 5;
+
+    //NB: look at LoadWorldRequest.frame_index comment
+    uint32 frame_index = 6;
+}
+
+
+message WorldmapSession {
+    string session_id = 1;
+    string ios_worldmap_url = 2;
+    repeated social.Post posts = 3;
+}
+
+
+message MultipleLoadWorldReply {
+    repeated LoadWorldReply load_world_reply = 1;
+
+    WorldmapSession worldmap_session = 2;
+}
+
+
+message GetActiveSessionsReply {
+    repeated base_types.ActiveSession sessions = 1;
+}
+
+
+message CreateARPostRequest {
+    // нет на quick-постах и worldmap-based-объектах
+    base_types.AssetForDetection asset = 1;
+    social.CreatePostRequest create_post_request = 2;
+}
+
+
+message CreateARPostReply {
+    social.Post post = 1;
+}
+
+
+message SessionStreamMessage {
+    oneof data {
+        base_types.DataFrame data_frame = 1;
+        base_types.Plane plane = 2;
+        base_types.DetectedAsset detected_asset = 3;
+        base_types.MotionFrame motion_frame = 4;
+        // SessionFinalData final_data = 5; 
+        LoadWorldReply load_world = 6;
+        base_types.HardwareFrame hw_frame = 7;
+        SessionHeadData session_head_data = 8;
+    }
+}
+
+message SaveVideoRequest {
+    string video_url = 1;
+    string session_id = 2;
+}
+
+//future
+//message GetSavedSessionByCoordinatesRequest {
+//    base_types.GpsCoordinates coordinates = 1;
+//    double size_in_degrees = 2;
+//}
+//
+//message GetSavedSessionByCoordinatesReply {
+//    string saved_session_url = 1;
+//}
+
+
+message SetLocationWorldMapRequest {
+    string session_id = 1;
+    string ios_worldmap_url = 2;
+    base_types.GpsCoordinates coordinates = 3;
+}
+
+
+service ARService {
+    // TODO: deprecated, moved to TelemetryService
+    rpc GetActiveSessions (BaseRequest) returns (GetActiveSessionsReply) {};
+
+    // TODO: deprecated, moved to TelemetryService
+    rpc InStream (stream SessionStreamMessage) returns (BaseReply) {};
+
+    // TODO: deprecated, moved to TelemetryService
+    rpc OutStream (BaseRequest) returns (stream SessionStreamMessage) {};
+
+    // TODO: deprecated, moved to TelemetryService
+    rpc Finalize (SessionFinalData) returns (BaseReply) {};
+
+    // TODO: deprecated, moved to TelemetryService
+    rpc SaveTelemetryVideo (SaveVideoRequest) returns (BaseReply) {};
+
+
+    // посты
+    rpc CreateARPost (CreateARPostRequest) returns (CreateARPostReply) {};
+
+    // "портим" место, где можно было бы разместить ассеты ворлдмапом, который будет отвечать за распознавание
+    rpc SetLocationWorldMap (SetLocationWorldMapRequest) returns (BaseReply) {};
+    rpc LoadWorld (LoadWorldRequest) returns (LoadWorldReply) {};
+    rpc LoadTutorialWorld (BaseRequest) returns (LoadWorldReply) {}; // Load tutorial with calculated transform.
+    rpc StreamMultipleLoadWorld (stream LoadWorldRequest) returns (stream MultipleLoadWorldReply);
+//    rpc GetSavedSessionByCoordinates (GetSavedSessionByCoordinatesRequest) returns (GetSavedSessionByCoordinatesReply); //future
+
+   //клиент открывает канал и слушает позиционирование ("запросы" прилетают в рамках телеметрии в InStream)
+	rpc ListenPositions (base_types.EmptyRequest) returns (stream base_types.Position);
+
+
+    rpc HeathCheck (base_types.HealthCheckRequest) returns (base_types.HeathCheckReply);
+}
+
+
+service TelemetryService {
+    // Объединенные ин-аут методы
+    rpc InStream (stream SessionStreamMessage) returns (BaseReply) {};
+    rpc OutStream (BaseRequest) returns (stream SessionStreamMessage) {};
+
+    // Вызывай его, когда на клиенте сессия завершается
+    rpc Finalize (SessionFinalData) returns (BaseReply) {};
+
+    rpc GetActiveSessions (BaseRequest) returns (GetActiveSessionsReply) {};
+    rpc SaveTelemetryVideo (SaveVideoRequest) returns (BaseReply) {};
+}

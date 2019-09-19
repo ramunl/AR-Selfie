@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+import "base_types.proto";
+import "proxy.proto";
+
+package session; //это файл, который заменяет старый статичный proto
+
+
+message SessionData {
+    // TODO: REMOVE deprecated
+    base_types.ARSessionFrame result_ar_session = 1;
+
+
+    double video_start_timestamp = 2;  // head
+    double session_start_timestamp = 13; //head
+    base_types.Matrix3x3 intrinsic_matrix = 3; // head
+    uint32 motion_fps = 4; // head
+    uint64 user_id = 10;
+    string session_id = 11;
+
+    string device_model = 14; // head
+    string device_os = 15; // head
+    bool is_detail_features_session = 16;
+    
+    repeated base_types.DataFrame data_frames = 5;  // ~60 times in 1 second (video FPS rate)
+    repeated base_types.Plane planes = 6;  // ~ <= 60 times in 1 second (~ 1FPS in general)
+    repeated base_types.DetectedAsset detected_assets = 7; // ~ <= 60 times in 1 second (~0.5 FPS in general)
+    repeated base_types.MotionFrame motion_frames = 8; // ~ 60-200 times in 1 second
+    repeated proxy.LoadWorldReply load_world = 9; // ocasionally (when client read this data)
+    repeated base_types.HardwareFrame hw_frames = 12; // ~ 1 time in 1 second
+    // частота/загрузка проца
+}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/rootView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:background="@drawable/splash"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <ProgressBar
+                android:id="@+id/splashProgressBar"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:indeterminate="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/splashButtonsContainer"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:orientation="horizontal"
+                android:gravity="center" android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+            <Button
+                    android:text="Dev mode"
+                    android:id="@+id/devActivityBtn"
+                    style="@style/ButtonStyle"/>
+
+            <Button
+                    android:text="Prod mode"
+                    android:id="@+id/prodActivityBtn"
+                    style="@style/ButtonStyle"/>
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

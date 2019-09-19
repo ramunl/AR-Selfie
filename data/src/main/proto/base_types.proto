@@ -1,0 +1,280 @@
+syntax = "proto3";
+
+// import "validate.proto";
+
+package base_types;
+
+
+message EmptyReply {}
+message EmptyRequest {}
+
+
+message MotionFrame {
+    double acceleration_x = 1;
+    double acceleration_y = 2; 
+    double acceleration_z = 3; 
+    double gyro_x = 4;
+    double gyro_y = 5;
+    double gyro_z = 6;
+    double magnetometer_x = 7;
+    double magnetometer_y = 8;
+    double magnetometer_z = 9;
+    double timestamp = 10;
+    double client_ts = 11; //client time
+    double server_ts = 12; //server time
+
+    uint32 frame_index = 13;
+}
+
+
+message HardwareFrame {
+    double client_ts = 1;
+    double server_ts = 2;
+    double cpu_usage = 3; // in percents
+    int64 ram_usage = 4; // in bytes
+    double battery_level = 5; // in percents
+    double ambient_lighting_lumen = 6; // in lumens
+    double ambient_lighting_lux = 7; // in lux
+    uint32 frame_index = 8;
+}
+
+
+message Matrix4x4 {
+    repeated float m = 1; // [(validate.rules).repeated.len_items = 16];
+}
+
+message Matrix3x3 {
+    repeated float m = 1; // [(validate.rules).repeated.len_items = 9];
+}
+
+message AssetForDetection {
+    bytes image_data = 1;
+    string image_url = 12;
+    float image_physical_width = 2;
+    float image_physical_height = 3;
+    Matrix4x4 camera_transform = 4; // 16 items
+    // VectorFloat3 hit_point = 5; // DEPRECATED
+    // VectorFloat3 hit_normal = 6; // 3 items, x y z
+    // Matrix4x4 banner_transform = 7; // 16 items
+    string asset_id = 8;
+    GpsCoordinates coordinates = 9;
+    double timestamp = 10;
+
+    // Android-specific fields
+    AndroidPose android_pose = 11;
+
+    Matrix4x4 session_to_asset_transform = 13; // banner_transform + hit_point при сохранении
+}
+
+message Anchor {
+    Matrix4x4 matrix = 1; // 16 items
+    string id = 2;
+}
+
+message DetectedAsset {
+    string asset_id = 1;
+    Anchor anchor = 2;
+    double timestamp = 3; //deprecated
+    Matrix4x4 camera_transform = 4; // 16 items
+
+    // Android-specific fields
+    VectorFloat2 android_extent_xz = 5;
+    repeated Anchor anchors = 6;
+    AndroidPose android_pose = 7;
+
+    double client_ts = 8;
+    double server_ts = 9;
+
+    uint32 frame_index = 10;
+
+}
+
+message GpsCoordinates {
+    double latitude = 1;
+    double longitude = 2;
+    double altitude = 3;
+
+    double horizontal_accuracy = 4;
+    double vertical_accuracy = 5;
+}
+
+message VectorFloat4 {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+    float w = 4;
+}
+
+message VectorFloat3 {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message VectorFloat2 {
+    float x = 1;
+    float y = 2;
+}
+
+message RgbColor {
+    float r = 1; // 0 <= x <= 1
+    float g = 2;
+    float b = 3;
+}
+
+message Point {
+    uint64 id = 1;
+    VectorFloat3 pos = 2;
+    RgbColor color = 3;
+}
+
+message PointsCloud {
+    VectorFloat3 centre = 1;
+    VectorFloat3 size = 2;
+    uint32 points_count = 3;
+    repeated Point points = 4;
+}
+
+message ARSessionFrame {
+    PointsCloud points_cloud = 1;
+    repeated Anchor anchors = 2;
+}
+
+
+message KeyPoint {
+    VectorFloat2 pos = 1;
+    float radius = 2;
+    float orientation = 3;
+    float response = 4;
+}
+
+
+message OrbFeaturePoint {
+    KeyPoint key_point = 1;
+    bytes orb_descriptor = 2;
+}
+
+
+message FeaturePoint {
+    oneof feature_point {
+        OrbFeaturePoint orb = 1;
+    }
+}
+
+
+message DataFrame {
+    ARSessionFrame ar_session_frame = 1; // without centre and size
+    double timestamp = 2; //deprecated
+    //device position
+    Matrix4x4 camera_transform = 3; // 16 items
+    GpsCoordinates gps = 4;
+    double client_ts = 5;
+    double server_ts = 6;
+
+    uint32 frame_index = 7;
+
+    repeated OrbFeaturePoint orb_feature_points = 8;
+    //TODO move feature points into Frame structure
+}
+
+message Plane {
+    repeated VectorFloat3 vertices = 1;
+    repeated VectorFloat2 texture_coordinates = 2;
+    uint32 triangle_count = 3;
+    repeated uint32 triangle_indices = 4;
+    repeated VectorFloat3 boundary_vertices = 5;
+    bool is_vertical = 6;
+    Anchor anchor = 7;
+
+    string id = 8;
+    double timestamp = 9; //deprecated
+
+    // Android-specific fields
+    repeated VectorFloat2 android_vertices = 10; //polygon
+    VectorFloat2 android_extent_xz = 11;
+    repeated Anchor anchors = 12;
+    AndroidPose android_pose = 13;
+
+    double client_ts = 14;
+    double server_ts = 15;
+
+    uint32 frame_index = 16;
+}
+
+message AndroidPose {
+    VectorFloat3 android_translation = 1;
+    VectorFloat4 android_quaternion = 2;
+}
+
+
+message ActiveSession {
+    string session_id = 1;
+    string username = 2;
+}
+
+// common types for photo/video/audio objects in chat and post
+message RichText {
+    string text = 1;
+}
+
+message Audio {
+    string url = 1;
+}
+
+message Photo {
+    string url = 1;
+    int32 width = 2;
+    int32 height = 3;
+    map<string, string> thumbnails = 4; // key is x/y-size like `1920x1080` or `128x128`, value is thumb url
+}
+
+message Video {
+    string url = 1;
+    int32 width = 2;
+    int32 height = 3;
+    double fps = 4;
+    map<string, string> thumbnails = 5; // key is x/y-size like `1920x1080` or `128x128`, value is thumb url
+}
+
+
+message Model3d {
+    string id = 1;
+    string url = 2;
+    string name = 3;
+    string preview_url = 4;
+    double upload_ts = 5;
+    string category_name = 6;
+}
+
+
+message HealthCheckRequest {
+    bool debug = 1; //if true - return extended info
+}
+
+message HeathCheckReply {
+    bool result = 1; //true if all is ok
+    map<string, bool> results = 2;
+    map<string, string> result_details = 3;
+}
+
+
+message AdminCommandRequest {
+    string command = 1;
+    string args_json = 2; 
+}
+
+message AdminCommandReply {
+    bool result = 1; //true if all is ok
+    string details = 2;
+}
+
+message BoundingBox {
+    GpsCoordinates min_point = 1;
+    GpsCoordinates max_point = 2;
+}
+
+message Position {
+    uint32 frame_index = 1; //DataFrame index
+    base_types.Matrix4x4 transform = 2;
+    string session_id = 3;
+}

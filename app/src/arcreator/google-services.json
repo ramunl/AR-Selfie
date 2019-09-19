@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "492956434832",
+    "firebase_url": "https://cloud-anchor-example-248416.firebaseio.com",
+    "project_id": "cloud-anchor-example-248416",
+    "storage_bucket": "cloud-anchor-example-248416.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:492956434832:android:54e67198240f8192",
+        "android_client_info": {
+          "package_name": "com.actant.cloudtest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "492956434832-iud83h4lokaa6nbfju7e0fv7q680iba9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2bwCmtII1tZ0_3JxM-y-Jnyx9tp06sd8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "492956434832-iud83h4lokaa6nbfju7e0fv7q680iba9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "492956434832-eqds9htc4246vh2m5ki9u6tboiod608s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "us.cyberstar.CloudAnchorExample"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

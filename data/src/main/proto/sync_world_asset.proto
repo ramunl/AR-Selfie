@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+import "base_types.proto";
+    
+message SyncWorldAsset {
+    repeated base_types.Matrix4x4 placed_banners = 1;
+    repeated base_types.AssetForDetection assets_for_detection = 2;
+}

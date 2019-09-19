@@ -1,0 +1,2 @@
+include ':app', ':domain', ':data', ':framerecorder', ':common', ':math', ':fullscreenvideoview', ':opencvwrapper', ':uxscenform',
+        ':openCVLibrary', 'OpenCV-android-sdk'

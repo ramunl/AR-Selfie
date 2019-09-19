@@ -1,0 +1,42 @@
+apply plugin: 'com.google.protobuf'
+protobuf {
+
+    protoc { artifact = 'com.google.protobuf:protoc:3.6.1' }
+    plugins {
+        javalite { artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0" }
+        grpc { artifact = "io.grpc:protoc-gen-grpc-java:$grpc_version" }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.plugins {
+                javalite {}
+                grpc { // Options added to --grpc_out
+                    option 'lite'
+                }
+            }
+        }
+    }
+}
+
+android {
+    defaultConfig {
+        buildConfigField "String", 'S3_PORT', "\":8971\""
+
+        buildConfigField "String", 'SERVER_URL', "\"app.dev.onesvc.one\""
+        //buildConfigField "String", 'SERVER_URL', "\"arm.cyberstar.us\""
+        buildConfigField "String", 'SCHEME', "\"http://\""
+    }
+}
+
+dependencies {
+    // You need to build grpc-java to obtain these libraries below.
+    implementation "io.grpc:grpc-okhttp:$grpc_version"
+    // CURRENT_GRPC_VERSION
+    implementation "io.grpc:grpc-protobuf-lite:$grpc_version"
+    // https://mvnrepository.com/artifact/com.amazonaws/aws-android-sdk-s3
+    implementation 'com.amazonaws:aws-android-sdk-s3:2.12.5'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.0'
+    implementation project(':common')
+    implementation project(':math')
+}

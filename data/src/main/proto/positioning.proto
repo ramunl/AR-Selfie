@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package positioning;
+import "base_types.proto";
+
+
+message GetPositionReply {
+    base_types.Position position = 1;
+}
+
+
+service PositioningService { //c++ сервис Ромы
+
+    // если клиент подключился к проксе и слушает (открыл ListenPositions), то все что прилетает
+    // в TelemetryService.InStream.DataFrame запрашивается сюда и результаты транслируются в ListenPositions
+    rpc GetPosition (base_types.DataFrame) returns (GetPositionReply);
+}
