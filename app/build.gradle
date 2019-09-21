@@ -45,8 +45,6 @@ dependencies {
     implementation project(':common')
     implementation project(':framerecorder') // technical video recorder
     implementation project(':fullscreenvideoview') //video player (for video post playback)
-    implementation project(':openCVLibrary')
-    implementation project(':opencvwrapper')
     implementation project(':uxscenform')
     //ui, views
     implementation 'com.google.android.material:material:1.0.0'

@@ -22,8 +22,6 @@ import us.cyberstar.presentation.feature.scenes.mainScene.di.MainViewModule
 import us.cyberstar.presentation.feature.scenes.mainScene.interactor.di.ArSceneInteractorModule
 import us.cyberstar.presentation.feature.scenes.mainScene.provider.di.MediaContentProviderModule
 import us.cyberstar.presentation.feature.scenes.mainScene.view.MainActivity
-import us.cyberstar.presentation.feature.scenes.opencv.di.OpenCVModule
-import us.cyberstar.presentation.feature.scenes.opencv.view.OpenCVActivity
 import us.cyberstar.presentation.feature.scenes.splashScene.di.SplashViewModule
 import us.cyberstar.presentation.feature.scenes.splashScene.view.SplashActivity
 
@@ -86,9 +84,5 @@ interface AppBuilderModule {
     @ContributesAndroidInjector(modules = [AuthViewModule::class, SocketModule::class, ProfileAuthModule::class])
     fun provideAuthActivityFactory(): AuthActivity
 
-
-    @PerActivity
-    @ContributesAndroidInjector(modules = [OpenCVModule::class])
-    fun provideOpenCVActivityFactory(): OpenCVActivity
 
 }

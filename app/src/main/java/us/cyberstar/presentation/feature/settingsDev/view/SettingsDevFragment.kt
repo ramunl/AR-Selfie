@@ -97,8 +97,6 @@ class SettingsDevFragment : SettingsDevView, BaseFragment() {
             cleanScene.setOnClickListener { presenter.cleanWorld() }
 
 
-            testOpenCV.setOnClickListener { presenter.runOpenCV(activity!!) }
-
         }
         return rootView
     }

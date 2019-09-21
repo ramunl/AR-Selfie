@@ -2,8 +2,6 @@ package us.cyberstar.domain.di.module
 
 
 import android.content.Context
-import com.opencv.wrapper.OpenCVConverter
-import com.opencv.wrapper.OpenCVConverterImpl
 import dagger.Module
 import dagger.Provides
 import io.reactivex.disposables.CompositeDisposable
@@ -122,7 +120,6 @@ class EntityLoaderModule {
     @PerActivity
     fun provideDataFrameEntityEmitter(
         framerRecorderSettings: FrameRecorderSettings,
-        openCVConverter: OpenCVConverter,
         compositeDisposable: CompositeDisposable,
         arCoreFrameEmitterBase: ArCoreFrameEmitter,
         gpsCoordinatesListener: GPSCoordinatesListener,
@@ -130,16 +127,12 @@ class EntityLoaderModule {
     ): DataFrameEntityEmitter =
         DataFrameEntityEmitterImpl(
             framerRecorderSettings,
-            openCVConverter,
             compositeDisposable,
             arCoreFrameEmitterBase,
             gpsCoordinatesListener,
                     telemetryRecorderFabric
         )
 
-    @Provides
-    @PerActivity
-    fun provideOpenCVConverter(context: Context): OpenCVConverter = OpenCVConverterImpl(context)
 
 
     @Provides

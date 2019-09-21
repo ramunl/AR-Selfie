@@ -17,7 +17,6 @@ import us.cyberstar.domain.external.manger.arScene.MultiNodeManager
 import us.cyberstar.domain.external.loader.local.TelemetryRecorderLocal
 import us.cyberstar.domain.internal.ArWorldLoaderSettings
 import us.cyberstar.presentation.base.BasePresenter
-import us.cyberstar.presentation.feature.scenes.opencv.view.OpenCVActivity
 import us.cyberstar.presentation.feature.settingsDev.view.SettingsDevView
 import us.cyberstar.presentation.helpers.GpsDialogProvider
 import java.util.*
@@ -147,9 +146,4 @@ class SettingsDevPresenter @Inject constructor(
           )*/
     }
 
-    fun runOpenCV(context: FragmentActivity) {
-        with(Intent(context, OpenCVActivity::class.java)) {
-            context.startActivity(this)
-        }
-    }
 }
