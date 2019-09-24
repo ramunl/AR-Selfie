@@ -77,7 +77,7 @@ abstract class ArGridManagerImpl constructor(
     }
 
     override fun destroyGrid() {
-        if (planesEmitterDisposable == null) {
+        if (planesEmitterDisposable != null) {
             Timber.d("destroyGrid")
             unsubscribeFromArCoreFrames()
             for (anchorNode in gridAnchorNodes.iterator()) {

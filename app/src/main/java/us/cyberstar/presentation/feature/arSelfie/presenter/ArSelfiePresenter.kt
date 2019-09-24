@@ -1,4 +1,4 @@
-package us.cyberstar.presentation.feature.cloudAnchor.presenter
+package us.cyberstar.presentation.feature.arSelfie.presenter
 
 import com.arellomobile.mvp.InjectViewState
 import io.reactivex.rxkotlin.addTo
@@ -7,49 +7,59 @@ import us.cyberstar.common.external.SchedulersProvider
 import us.cyberstar.common.external.SnackBarProvider
 import us.cyberstar.domain.external.ArSceneInitializer
 import us.cyberstar.domain.external.manger.arScene.CREATE_3D_ONLY
-import us.cyberstar.domain.external.manger.arScene.MultiNodeManager
-import us.cyberstar.domain.external.model.ArPosterModel
-import us.cyberstar.domain.external.usecase.CreateAr3dPostUseCase
+import us.cyberstar.domain.external.model.ArPostModel
+import us.cyberstar.domain.external.usecase.CreateSelfieUseCase
 import us.cyberstar.presentation.base.BasePresenter
-import us.cyberstar.presentation.feature.cloudAnchor.view.CloudArView
-import java.lang.StringBuilder
-import java.util.concurrent.TimeUnit
+import us.cyberstar.presentation.feature.arSelfie.view.ArSelfieView
+import us.cyberstar.presentation.feature.scenes.mainScene.provider.PhotoContentMaker
 import javax.inject.Inject
 
 
 @InjectViewState
-class CloudArPresenter @Inject constructor(
-    private val multiNodeManager: MultiNodeManager,
+class ArSelfiePresenter @Inject constructor(
+    private val photoContentMaker: PhotoContentMaker,
     private val sceneInitializer: ArSceneInitializer,
     private val snackBarProvider: SnackBarProvider,
     private val schedulersProvider: SchedulersProvider,
-    private val createAr3dPostUseCase: CreateAr3dPostUseCase
-) : BasePresenter<CloudArView>() {
+    private val createselfieUseCase: CreateSelfieUseCase
+) : BasePresenter<ArSelfieView>() {
+
+
+    fun makeArPhoto() {
+        resetViewsState()
+        photoContentMaker.makePhoto()
+            .subscribeOn(schedulersProvider.io())
+            .observeOn(schedulersProvider.io())
+            .subscribe({
+                Timber.d("came a new bitmap $it from photoEmitter ")
+                createselfieUseCase.addNewModelToScene(ArPostModel(it))
+                Timber.e("-----------------create a new Photo post with postId")
+
+            }, { Timber.e("photoEmitter failed with $it") })
+            .addTo(compositeDisposable)
+    }
 
     fun onStart() {
-        initialViewsState()
+        resetViewsState()
         CREATE_3D_ONLY = true
-        createAr3dPostUseCase.startUseCase()
+        createselfieUseCase.startUseCase()
             .subscribeOn(schedulersProvider.io())
             .observeOn(schedulersProvider.ui())
             .subscribe(
                 {
                     when (it.sceneMode) {
-                        CreateAr3dPostUseCase.ControlMode.SceneMode.FACE_TO_CAMERA -> {
+                        CreateSelfieUseCase.ControlMode.SceneMode.FACE_TO_CAMERA -> {
                             faceToCameraMode()
-                            if (it.horizontalPlaneNum.get() > 0) {
-                                viewState.setDropControlVisible(true)
-                            }
                         }
-                        CreateAr3dPostUseCase.ControlMode.SceneMode.DROP -> {
+                        CreateSelfieUseCase.ControlMode.SceneMode.DROP -> {
                         }
-                        CreateAr3dPostUseCase.ControlMode.SceneMode.IDLE -> {
-                            initialViewsState()
+                        CreateSelfieUseCase.ControlMode.SceneMode.IDLE -> {
+                            resetViewsState()
                         }
-                        CreateAr3dPostUseCase.ControlMode.SceneMode.LOCKED -> {
+                        CreateSelfieUseCase.ControlMode.SceneMode.LOCKED -> {
                             viewState.switchLockState(true)
                         }
-                        CreateAr3dPostUseCase.ControlMode.SceneMode.SYNCH -> {
+                        CreateSelfieUseCase.ControlMode.SceneMode.SYNCH -> {
                             viewState.setLoadingView(true)
                         }
                     }
@@ -59,38 +69,29 @@ class CloudArPresenter @Inject constructor(
                 { err -> snackBarProvider.showMessage(err.message?.let { it } ?: err.toString()) },
                 {
                     Timber.d("complete use case")
-                    initialViewsState()
+                    resetViewsState()
                 }
             ).addTo(compositeDisposable)
-        createAr3dPostUseCase.startUpdate()
-        sceneInitializer.toggleLocalRemote(false)
-        sceneInitializer.loadWorld(true)
+        createselfieUseCase.startUpdate()
     }
 
     fun onStop() {
-        createAr3dPostUseCase.onStopUseCase()
-        createAr3dPostUseCase.stopUpdate()
-        sceneInitializer.loadWorld(false)
+        createselfieUseCase.onStopUseCase()
+        createselfieUseCase.stopUpdate()
+        //sceneInitializer.loadWorld(false)
     }
 
     fun setLockMode(isLocked: Boolean) {
-        createAr3dPostUseCase.lockModel(isLocked)
+        createselfieUseCase.lockModel(isLocked)
     }
 
     fun dropModel() {
         Timber.d("dropModel")
-        createAr3dPostUseCase.moveModelOnHorizontalPlane()
+        createselfieUseCase.moveModelOnHorizontalPlane()
     }
 
     fun deleteModel() {
-        createAr3dPostUseCase.removeModelFromScene()
-    }
-
-    fun createModel() {
-        Timber.d("createModel")
-        initialViewsState()
-        createAr3dPostUseCase.addNewModelToScene(ArPosterModel(listOf(""), "testurl"))
-        viewState.setDropControlVisible(false)
+        createselfieUseCase.removeModelFromScene()
     }
 
     private fun faceToCameraMode() {
@@ -100,7 +101,7 @@ class CloudArPresenter @Inject constructor(
         viewState.setPhotoButtonVisible(false)
     }
 
-    private fun initialViewsState() {
+    private fun resetViewsState() {
         viewState.setLoadingView(false)
         viewState.setDeleteControlVisible(false)
         viewState.setLockControlVisible(false)
@@ -110,7 +111,7 @@ class CloudArPresenter @Inject constructor(
     }
 
     fun confirmPostCreate() {
-        createAr3dPostUseCase.confirmPostCreation()
+        createselfieUseCase.confirmPostCreation()
             .subscribeOn(schedulersProvider.io())
             .observeOn(schedulersProvider.ui())
             .subscribe(

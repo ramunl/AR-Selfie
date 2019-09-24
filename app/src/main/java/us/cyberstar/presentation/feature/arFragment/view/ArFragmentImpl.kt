@@ -47,7 +47,7 @@ class ArFragmentImpl() : BaseArFragment(), ArView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-      //  presenter.addTapListenerToView(arSceneView())
+      //  selfiePresenter.addTapListenerToView(arSceneView())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -50,7 +50,7 @@ class CameraFragment : CameraView, BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-       // presenter.addTapListenerToView(rootView)
+       // selfiePresenter.addTapListenerToView(rootView)
 
         recordProgressBar.progressListener =
             object : CircularProgressBar.ProgressListener {

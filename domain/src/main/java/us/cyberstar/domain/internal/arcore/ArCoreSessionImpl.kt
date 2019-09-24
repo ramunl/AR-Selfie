@@ -191,7 +191,7 @@ internal class ArCoreSessionImpl @Inject constructor(
                     }
 
                 }
-                updateSnackbarMessage()
+                //updateSnackbarMessage()
             }
 
             override fun onCaptureQueueEmpty(session: CameraCaptureSession) {
@@ -284,7 +284,7 @@ internal class ArCoreSessionImpl @Inject constructor(
                     // Resume ARCore.
                     session.resume()
                     arcoreActive = true
-                    updateSnackbarMessage()
+                    //updateSnackbarMessage()
                     // Set capture session callback while in AR mode.
                     sharedCamera!!.setCaptureCallback(captureSessionCallback, backgroundHandler)
                 } catch (e: CameraNotAvailableException) {
@@ -296,7 +296,7 @@ internal class ArCoreSessionImpl @Inject constructor(
                 // Resume ARCore.
                 session.resume()
                 arcoreActive = true
-                updateSnackbarMessage()
+                //updateSnackbarMessage()
             } catch (e: CameraNotAvailableException) {
                 Timber.e("Failed to resume ARCore session $e")
             }
@@ -309,7 +309,7 @@ internal class ArCoreSessionImpl @Inject constructor(
             // Pause ARCore.
             session.pause()
             arcoreActive = false
-            updateSnackbarMessage()
+            //updateSnackbarMessage()
         }
     }
 

@@ -1,5 +1,6 @@
 package us.cyberstar.domain.internal.usecase
 
+import android.content.Context
 import com.cyber.ux.SceneFormNodeProvider
 import com.google.ar.core.Plane
 import com.google.ar.core.TrackingState
@@ -22,16 +23,23 @@ import us.cyberstar.domain.external.helper.getNewId
 import us.cyberstar.domain.external.loader.CreatePostFabric
 import us.cyberstar.domain.external.loader.grpc.telemetry.PostEntityEmitter
 import us.cyberstar.domain.external.manger.arScene.NodeManager
+import us.cyberstar.domain.external.model.ArPostModel
 import us.cyberstar.domain.external.model.ArPosterModel
+import us.cyberstar.domain.external.model.mapper.getPostContentEntityFrom
 import us.cyberstar.domain.external.usecase.CreateAr3dPostUseCase
+import us.cyberstar.domain.external.usecase.CreateSelfieUseCase
 import us.cyberstar.domain.faceToCamera
 import us.cyberstar.domain.internal.usecase.base.Ar3dModelPostData
 import us.cyberstar.domain.internal.usecase.base.PostDataRetriever
 import us.cyberstar.domain.internal.utils.getMatrix4
+import us.cyberstar.domain.internal.utils.screenCenter
 import us.cyberstar.domain.isAnimating
+import us.cyberstar.domain.movePostNodeTo
+import us.cyberstar.domain.movePostToPlane
 import java.util.HashMap
 
-class CreateAr3dPostUseCaseImpl(
+class CreateSelfieUseCaseImpl(
+    private val context: Context,
     private val sceneFormNodeProvider: SceneFormNodeProvider,
     private val renderableFactory: RenderableFactory,
     private val schedulersProvider: SchedulersProvider,
@@ -43,13 +51,51 @@ class CreateAr3dPostUseCaseImpl(
     val postDataRetriever: PostDataRetriever,
     val arCoreScene: ArCoreScene,
     val cloudAnchorManager: CloudAnchorManager
-) : CreateAr3dPostUseCase(arCoreFrameEmitter) {
+) : CreateSelfieUseCase(arCoreFrameEmitter) {
+
+    /* override fun addNewModelToScene(arPosterModel: ArPosterModel) {
+       Timber.d("addNewModelToScene")
+       val postContentEntity = PostContentEntity(PhotoPostContentEntity(0, 0, "", HashMap()))
+       entityPost = postEntityEmitter.createEntity(
+           "",
+           null,
+           1,
+           0,
+           null,
+           arPosterModel,
+           null,
+           postContentEntity,
+           true,
+           "anchor_id_temp" // this is temp anchor id to recognize it as 3d cloud post
+       )
+       controlMode.sceneMode = ControlMode.SceneMode.FACE_TO_CAMERA
+       currentSessionNodeManager.addPostEntityToQueue(entityPost!!)
+   }*/
+
+    override fun addNewModelToScene(arPostModel: ArPostModel) {
+        val postContentEntity = getPostContentEntityFrom(arPostModel)
+        val arPoster = ArPosterModel(listOf(""))
+        val arPostEntity = postEntityEmitter.createEntity(
+            arPostModel.title,
+            false,
+            1,
+            0,
+            null,
+            arPoster,
+            null,
+            postContentEntity,
+            true
+        )
+        //controlMode.sceneMode = ControlMode.SceneMode.FACE_TO_CAMERA
+        currentSessionNodeManager.addPostEntityToQueue(arPostEntity)
+    }
 
     override fun onStopUseCase() {
         controlModeListener?.onComplete()
     }
+
     override fun startUseCase(): BehaviorSubject<ControlMode> {
-        renderableFactory.loadFootPrint()
+        //   renderableFactory.loadFootPrint()
         controlModeListener = BehaviorSubject.create()
         return controlModeListener!!
     }
@@ -86,42 +132,37 @@ class CreateAr3dPostUseCaseImpl(
         entityPost?.let { currentSessionNodeManager.removeNode(it.postId()) }
 
     private fun currentNode() = currentSessionNodeManager.transformableNodeCurrent
-    // entityPost?.let { currentSessionNodeManager.getNodeById(it.postCompId.postId) }
 
     override fun onUpdate(frameTime: FrameTime) {
-        if (!isAnimating()) {
-            arCoreFrameEmitter.lastFrame()?.let { lastFrame ->
-                if (lastFrame.camera.trackingState == TrackingState.TRACKING) {
-                    val planes = lastFrame.getUpdatedTrackables(Plane::class.java)
-                    var planeFound = 0
-                    for (plane in planes) {
-                        if (plane.type == Plane.Type.HORIZONTAL_UPWARD_FACING) {
-                            planeFound++
-                        }
-                    }
-                    controlMode.postsNum.set(currentSessionNodeManager.getPostNodesCount())
-                    controlMode.horizontalPlaneNum.set(planeFound)
-
-                    currentNode()?.let {
-                        schedulersProvider.ui().scheduleDirect {
-                            when (controlMode.sceneMode) {
-                                ControlMode.SceneMode.FACE_TO_CAMERA -> {
-                                    //faceToCamera(camera, it, null, true)
+        currentNode()?.let { currentNode ->
+            var planeHit = false
+            if (!isAnimating()) {
+                arCoreFrameEmitter.lastFrame()?.let { lastFrame ->
+                    // if (lastFrame.camera.trackingState == TrackingState.TRACKING)
+                    with(screenCenter(context)) {
+                        val results = lastFrame.hitTest(x.toFloat(), y.toFloat())
+                        for (res in results) {
+                            if (res.trackable is Plane) {
+                                schedulersProvider.ui().scheduleDirect {
+                                    movePostNodeTo(currentNode, res.hitPose)
+                                    planeHit = true
                                 }
-                                ControlMode.SceneMode.DROP -> {
-                                  //  if (move3dModelToGround(lastFrame, it)) {
-                                  //      controlMode.sceneMode = ControlMode.SceneMode.LOCKED
-                                  //  }
-                                }
+                                break
                             }
                         }
                     }
+
+                    if (!planeHit) {
+                        if (controlMode.sceneMode != ControlMode.SceneMode.FACE_TO_CAMERA) {
+                            controlMode.sceneMode = ControlMode.SceneMode.FACE_TO_CAMERA
+                            controlModeListener?.onNext(controlMode)
+                        }
+                        faceToCamera(arCoreScene.scene.camera, currentNode, null)
+                        //schedulersProvider.ui().scheduleDirect {}
+                    }
                 }
             }
-            controlModeListener?.onNext(controlMode)
-            cloudAnchorManager.onUpdate()
         }
-
     }
 
     override fun removeModelFromScene() {
@@ -142,25 +183,6 @@ class CreateAr3dPostUseCaseImpl(
         }
     }
 
-    override fun addNewModelToScene(arPosterModel: ArPosterModel) {
-        Timber.d("addNewModelToScene")
-        val postContentEntity = PostContentEntity(PhotoPostContentEntity(0, 0, "", HashMap()))
-        entityPost = postEntityEmitter.createEntity(
-            "",
-            null,
-            1,
-            0,
-            null,
-            arPosterModel,
-            null,
-            postContentEntity,
-            true,
-            "anchor_id_temp" // this is temp anchor id to recognize it as 3d cloud post
-        )
-        controlMode.sceneMode = ControlMode.SceneMode.FACE_TO_CAMERA
-        currentSessionNodeManager.addPostEntityToQueue(entityPost!!)
-    }
-
     override fun confirmPostCreation(): Single<Boolean> {
         Timber.d("confirmPostCreation")
         return Single.create<Boolean> {
@@ -178,7 +200,8 @@ class CreateAr3dPostUseCaseImpl(
                         }
                         val res = createPostFabric.getPostCreateFabric()
                             .createPostRequest(CreatePostRequestEntity(null, entityPost!!))
-                        schedulersProvider.ui().scheduleDirect { sceneFormNodeProvider.transformationSystem.deselectNode() }
+                        schedulersProvider.ui()
+                            .scheduleDirect { sceneFormNodeProvider.transformationSystem.deselectNode() }
                         resetCurrentNodeRef()
                         it.onSuccess(res)
                         controlMode.sceneMode = ControlMode.SceneMode.IDLE

@@ -14,7 +14,7 @@ import us.cyberstar.domain.external.model.ArPostModel
 import us.cyberstar.presentation.base.BasePresenter
 import us.cyberstar.presentation.feature.arFragment.view.ArFragmentImpl
 import us.cyberstar.presentation.feature.cameraView.view.CameraFragment
-import us.cyberstar.presentation.feature.cloudAnchor.view.CloudArFragment
+import us.cyberstar.presentation.feature.arSelfie.view.ArSelfieFragment
 import us.cyberstar.presentation.feature.postEdit.view.PostEditFragment
 import us.cyberstar.presentation.feature.postOpenPhoto.view.PostOpenPhotoFragment
 import us.cyberstar.presentation.feature.postOpenVideo.view.PostOpenVideoFragment
@@ -40,7 +40,7 @@ class MainViewPresenter @Inject constructor(
 
     val settingsDevFragment: SettingsDevFragment by lazy { SettingsDevFragment() }
     val arFragmentImpl: ArFragmentImpl by lazy { ArFragmentImpl() }
-    val cloudArFragment: CloudArFragment by lazy { CloudArFragment() }
+    val arSelfieFragment: ArSelfieFragment by lazy { ArSelfieFragment() }
 
     override fun attachView(view: MainView) {
         super.attachView(view)
@@ -54,7 +54,7 @@ class MainViewPresenter @Inject constructor(
     }
 
     fun addCloudArFragmentImpl() {
-        viewState.addSettingsView(cloudArFragment)
+        viewState.addSettingsView(arSelfieFragment)
     }
     fun addSettingsView() {
         viewState.addSettingsView(settingsDevFragment)
@@ -79,7 +79,6 @@ class MainViewPresenter @Inject constructor(
         /*if (cameraFragment?.isAdded == true) {
             changeFragmentVisibility(cameraFragment, true)
         } else {*/
-        photoContentMaker.provideArView(arFragmentImpl)
         cameraFragment = CameraFragment()
         viewState.putFragment(cameraFragment!!)
         //}

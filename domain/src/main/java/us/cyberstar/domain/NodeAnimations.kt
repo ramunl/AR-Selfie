@@ -1,18 +1,28 @@
 package us.cyberstar.domain
 
 import android.animation.Animator
+import com.cyber.ux.TransformableNode
 import com.google.ar.core.Frame
 import com.google.ar.core.Plane
+import com.google.ar.core.Pose
 import com.google.ar.sceneform.Camera
 import com.google.ar.sceneform.Node
+import com.google.ar.sceneform.Scene
+import com.google.ar.sceneform.collision.Box
 import com.google.ar.sceneform.collision.Ray
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
+import us.cyberstar.data.ext.distanceFromVector
+import us.cyberstar.data.ext.rotationQuaternion
+import us.cyberstar.data.ext.translationVector3
 import us.cyberstar.data.ext.worldPosition
 import us.cyberstar.domain.external.arcore.ArCoreScene
 import us.cyberstar.domain.internal.model.CellNode
 import us.cyberstar.domain.internal.utils.asArray
+import us.cyberstar.domain.internal.utils.asVector3
 import us.cyberstar.domain.internal.utils.calculateQuartToRotateInParallel
+import us.cyberstar.domain.internal.utils.getPose
+import kotlin.math.abs
 
 var isAnimatingPos = false
 var isAnimatingRot = false
@@ -31,46 +41,45 @@ fun runQuickPostAnimation(
     postNode: Node,
     animationEndListener: AnimationEndListener? = null
 ) {
-    faceToCamera(camera, postNode, object : AnimationEndListener {
+    /*faceToCamera(camera, postNode, object : AnimationEndListener {
         override fun onAnimationEnd() {
             movePostDown(camera, postNode, animationEndListener)
         }
-    })
+    })*/
 }
-/*
-private fun faceToCamera(camera: com.google.ar.core.Camera, postNode: PostNode) {
-    Timber.d("faceToCamera $postNode")
-    if (!isAnimatingPos && !isAnimatingRot) {
-        val direction = Vector3.subtract(
-            camera.worldPosition(),
-            with(camera.worldPosition()) { Vector3(x, y, z + 1) })
-        val targetPosition = Vector3.add(
-            camera.worldPosition(),
-            camera.
-        )
-        val targetRotation = Quaternion.lookRotation(direction, Vector3.up())
-        movePostNodeTo(postNode, targetPosition, targetRotation, null)
-    }
-}*/
+
 
 fun faceToCamera(
     camera: Camera,
     postNode: Node,
     animationEndListener: AnimationEndListener? = null,
-    noRotation:Boolean = false
+    noRotation: Boolean = false
 ) {
     if (!isAnimatingPos && !isAnimatingRot) {
         //   Timber.d("faceToCamera $postNode")
-        val direction = Vector3.subtract(
-            camera.worldPosition,
-            postNode.worldPosition)
-
+        //postNode.setLookDirection(camera.worldPosition)
+        //val localScale = (postNode as TransformableNode).localScale.x
+        val worldScale = (postNode as TransformableNode).worldScale.x
+        val size = (postNode.renderable!!.collisionShape!! as Box).size
         val targetPosition = Vector3.add(
-            camera.worldPosition,
-            camera.forward
+            with(camera.worldPosition) { Vector3(x, y - (size.y * worldScale) / 2, z) }, camera.forward
         )
-        val targetRotation = if(noRotation) null else Quaternion.lookRotation(direction, Vector3.up())
-        movePostNodeTo(postNode, targetPosition, targetRotation, animationEndListener)
+        /*val direction = Vector3.subtract(
+            camera.worldPosition,
+            targetPosition
+        )*/
+
+        //val direction = Vector3.subtract(camera.worldPosition, postNode.worldPosition)
+
+        val cardPosition = postNode.getWorldPosition()
+        val direction = Vector3.subtract(camera.worldPosition, cardPosition)
+        val lookRotation = Quaternion.lookRotation(direction, Vector3.up())
+        postNode.worldRotation = lookRotation
+        postNode.worldPosition = targetPosition
+       // val targetRotation = null//Quaternion.lookRotation(direction, Vector3.up())
+       // movePostNodeTo(postNode, targetPosition, targetRotation, animationEndListener)
+
+
     }
 }
 
@@ -79,13 +88,12 @@ fun movePostDown(
     postNode: Node,
     animationEndListener: AnimationEndListener? = null
 ) {
-    val direction = Vector3.subtract(
-        camera.worldPosition,
-        with(camera.worldPosition) { Vector3(x, y + 1, z) })
     val targetPosition = Vector3.add(
         with(camera.worldPosition) { Vector3(x, y - 0.25f, z) },
         camera.forward.scaled(1.5f)
     )
+
+    val direction = Vector3.subtract(camera.worldPosition, targetPosition)
     val targetRotation = Quaternion.lookRotation(direction, Vector3.up())
     movePostNodeTo(postNode, targetPosition, targetRotation, animationEndListener)
 }
@@ -96,11 +104,25 @@ interface AnimationEndListener {
 
 fun movePostNodeTo(
     postNode: Node,
+    targetPose: Pose,
+    animationEndListener: AnimationEndListener? = null
+) {
+    movePostNodeTo(
+        postNode,
+        targetPose.translationVector3(),
+        calculateQuartToRotateInParallel(targetPose),
+        animationEndListener
+    )
+}
+
+fun movePostNodeTo(
+    postNode: Node,
     targetPosition: Vector3,
     targetRotation: Quaternion?,
     animationEndListener: AnimationEndListener? = null
 ) {
-    if (!isAnimatingPos) {
+    val dist = targetPosition.distanceFromVector(postNode.worldPosition)
+    if (dist > 0.1 && !isAnimatingPos) {
         isAnimatingPos = true
         postNode.playTranslateAnimation(
             "worldPosition",
@@ -119,14 +141,17 @@ fun movePostNodeTo(
             }
         })
     }
+
     if (!isAnimatingRot && targetRotation != null) {
-        isAnimatingRot = true
-        postNode.playTranslateAnimation(
-            "worldRotation",
-            postNode.worldRotation.asArray(),
-            targetRotation.asArray()
-        )
-            .addListener(object : Animator.AnimatorListener {
+        //val rotDiff = abs(targetRotation.w - postNode.worldRotation.w)
+        //if (rotDiff > 0.0001f)
+        //{
+            isAnimatingRot = true
+            postNode.playTranslateAnimation(
+                "worldRotation",
+                postNode.worldRotation.asArray(),
+                targetRotation.asArray()
+            ).addListener(object : Animator.AnimatorListener {
                 override fun onAnimationRepeat(animation: Animator?) {}
                 override fun onAnimationCancel(animation: Animator?) {}
                 override fun onAnimationStart(animation: Animator?) {}
@@ -138,6 +163,8 @@ fun movePostNodeTo(
                     }
                 }
             })
+        //}
+
     }
 }
 
@@ -181,27 +208,36 @@ fun updateTargetingPostNodePosition(
 }
 
 
-fun move3dModelToGround(
+fun movePostToPlane(
+    scene: Scene,
     frame: Frame,
     postNode: Node
 ): Boolean {
     var hitSuccess = false
     val planes = frame.getUpdatedTrackables(Plane::class.java)
-    for(plane in planes) {
-        if(plane.type == Plane.Type.HORIZONTAL_UPWARD_FACING) {
+    for (plane in planes) {
+        if (plane.type == Plane.Type.VERTICAL) {
             val targetPos = Vector3(postNode.worldPosition)
-            targetPos.y = plane.centerPose.extractTranslation().ty()
+            targetPos.z = plane.centerPose.extractTranslation().ty()
             movePostNodeTo(postNode, targetPos, null)
             hitSuccess = true
         }
     }
-    /*val ray = Ray(postNode.worldPosition, arCoreScene.scene.camera.down)
-    val results = arCoreScene.scene.hitTestAll(ray)
+    for (plane in planes) {
+        //plane.isPoseInExtents()
+    }
+    val ray = Ray(frame.camera.worldPosition(), scene.camera.forward)
+    val results = scene.hitTestAll(ray)
     for (result in results) {
-        result.
-        movePostNodeTo(postNode, result.point, null)
-        hitSuccess = true
-        break
-    }*/
+        result.node
+    }
+    //val ray = Ray(postNode.worldPosition, scene.camera.worldToScreenPoint())
+    //val results = arCoreScene.scene.hitTestAll(ray)
+    /* for (result in results) {
+         result.
+         movePostNodeTo(postNode, result.point, null)
+         hitSuccess = true
+         break
+     }*/
     return hitSuccess
 }

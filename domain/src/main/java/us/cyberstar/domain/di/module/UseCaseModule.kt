@@ -22,14 +22,10 @@ import us.cyberstar.domain.external.loader.grpc.telemetry.PostEntityEmitter
 import us.cyberstar.domain.external.loader.s3.MediaLoader
 import us.cyberstar.domain.external.manger.arScene.NodeManager
 import us.cyberstar.domain.external.provider.RootNodeProvider
-import us.cyberstar.domain.external.usecase.CreateTargetPostUseCase
-import us.cyberstar.domain.external.usecase.ArPostOpenUseCase
-import us.cyberstar.domain.external.usecase.CreateAr3dPostUseCase
-import us.cyberstar.domain.external.usecase.CreateQuickPostUseCase
+import us.cyberstar.domain.external.usecase.*
 import us.cyberstar.domain.internal.manger.arScene.grid.HorGridManagerImpl
 import us.cyberstar.domain.internal.manger.arScene.grid.VertGridManagerImpl
-import us.cyberstar.domain.internal.usecase.ArPostOpenUseCaseImpl
-import us.cyberstar.domain.internal.usecase.CreateAr3dPostUseCaseImpl
+import us.cyberstar.domain.internal.usecase.*
 import us.cyberstar.domain.internal.usecase.CreateQuickPostUseCaseImpl
 import us.cyberstar.domain.internal.usecase.CreateTargetPostUseCaseImpl
 import us.cyberstar.domain.internal.usecase.base.PostDataRetriever
@@ -138,6 +134,37 @@ class UseCaseModule {
         cloudAnchorManager: CloudAnchorManager
     ): CreateAr3dPostUseCase =
         CreateAr3dPostUseCaseImpl(
+            sceneFormNodeProvider,
+            renderableFactory,
+            schedulersProvider,
+            arCoreFrameEmitter,
+            arCoreSession,
+            currentSessionNodeManager,
+            createPostFabric,
+            postEntityEmitter,
+            postDataRetriever,
+            arCoreScene,
+            cloudAnchorManager
+        )
+
+    @Provides
+    @PerActivity
+    fun provideCreateSelfieUseCase(
+        context: Context,
+        sceneFormNodeProvider: SceneFormNodeProvider,
+        renderableFactory: RenderableFactory,
+        schedulersProvider: SchedulersProvider,
+        arCoreFrameEmitter: ArCoreFrameEmitter,
+        currentSessionNodeManager: NodeManager,
+        createPostFabric: CreatePostFabric,
+        postEntityEmitter: PostEntityEmitter,
+        postDataRetriever: PostDataRetriever,
+        arCoreSession: ArCoreSession,
+        arCoreScene: ArCoreScene,
+        cloudAnchorManager: CloudAnchorManager
+    ): CreateSelfieUseCase =
+        CreateSelfieUseCaseImpl(
+            context,
             sceneFormNodeProvider,
             renderableFactory,
             schedulersProvider,

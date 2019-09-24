@@ -1,19 +1,18 @@
-package us.cyberstar.presentation.feature.cloudAnchor.view
+package us.cyberstar.presentation.feature.arSelfie.view
 
 import android.os.Bundle
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import kotlinx.android.synthetic.main.fragment_ar_creator.*
-import kotlinx.android.synthetic.main.fragment_cam.*
 import us.cyberstar.arcyber.R
 import us.cyberstar.presentation.base.BaseFragment
-import us.cyberstar.presentation.feature.cloudAnchor.presenter.CloudArPresenter
+import us.cyberstar.presentation.feature.arSelfie.presenter.ArSelfiePresenter
 import us.cyberstar.presentation.helpers.changeVisibility
 import javax.inject.Inject
 import javax.inject.Provider
 
-class CloudArFragment : BaseFragment(), CloudArView {
+class ArSelfieFragment : BaseFragment(), ArSelfieView {
 
     override fun updateStatusText(statusText: String) {
         statusTextView.text = statusText
@@ -40,53 +39,53 @@ class CloudArFragment : BaseFragment(), CloudArView {
     }
 
     override fun setDropControlVisible(isVisible: Boolean) {
-        dropButton.changeVisibility(isVisible)
+        makePhotoBtn.changeVisibility(isVisible)
     }
 
     override fun setPhotoButtonVisible(isVisible: Boolean) {
-        createButton.changeVisibility(isVisible)
+        makeArPhotoBtn.changeVisibility(isVisible)
     }
 
     override fun layoutRes(): Int = R.layout.fragment_ar_creator
 
     @Inject
-    lateinit var providerPresenter: Provider<CloudArPresenter>
+    lateinit var providerSelfiePresenter: Provider<ArSelfiePresenter>
 
     @InjectPresenter
-    lateinit var presenter: CloudArPresenter
+    lateinit var selfiePresenter: ArSelfiePresenter
 
     @ProvidePresenter
-    fun providePresenter(): CloudArPresenter = providerPresenter.get()
+    fun providePresenter(): ArSelfiePresenter = providerSelfiePresenter.get()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        createButton.setOnClickListener {
-            presenter.createModel()
+        makeArPhotoBtn.setOnClickListener {
+            selfiePresenter.makeArPhoto()
         }
         deleteButton.setOnClickListener {
-            presenter.deleteModel()
+            selfiePresenter.deleteModel()
         }
         hostButton.setOnClickListener {
-            presenter.confirmPostCreate()
+            selfiePresenter.confirmPostCreate()
         }
 
         lockModelSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
-            presenter.setLockMode(isChecked)
+            selfiePresenter.setLockMode(isChecked)
         }
 
-        dropButton.setOnClickListener {
-            presenter.dropModel()
+        makePhotoBtn.setOnClickListener {
+            selfiePresenter.dropModel()
         }
     }
 
     override fun onStop() {
         super.onStop()
-        presenter.onStop()
+        selfiePresenter.onStop()
     }
 
     override fun onStart() {
         super.onStart()
-        presenter.onStart()
+        selfiePresenter.onStart()
     }
 
 }

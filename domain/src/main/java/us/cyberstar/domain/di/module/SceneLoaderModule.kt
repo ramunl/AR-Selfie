@@ -183,6 +183,7 @@ class SceneLoaderModule {
     @Provides
     @PerActivity
     fun provideArCoreSceneInitializer(
+        currentSessionNodeManager: NodeManager,
         rootNodeProvider: RootNodeProvider,
         horGridManager: HorGridManagerImpl,
         framerRecorderSettings: FrameRecorderSettings,
@@ -205,6 +206,7 @@ class SceneLoaderModule {
         telemetryRecorderFabric: TelemetryRecorderFabric,
         gpsCoordinatesListener: GPSCoordinatesListener
     ): ArSceneInitializer = ArSceneInitializerImpl(
+        currentSessionNodeManager,
         rootNodeProvider,
         horGridManager,
         framerRecorderSettings,

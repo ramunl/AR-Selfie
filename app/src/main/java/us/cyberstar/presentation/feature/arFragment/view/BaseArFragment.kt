@@ -246,7 +246,8 @@ abstract class BaseArFragment : BaseFragment(), Scene.OnPeekTouchListener, Scene
 
     override fun onResume() {
         super.onResume()
-        Handler().postDelayed({ start() }, 3000)//TODO to remove delay implement ARCore is active. callback here
+        start()
+        //Handler().postDelayed({ start() }, 3000)//TODO to remove delay implement ARCore is active. callback here
     }
 
     override fun onPause() {

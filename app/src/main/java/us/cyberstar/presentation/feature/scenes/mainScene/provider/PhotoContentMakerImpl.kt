@@ -12,20 +12,17 @@ import us.cyberstar.data.external.s3.S3Cache
 import us.cyberstar.domain.external.model.ArPostModel
 import us.cyberstar.domain.external.model.ArPostPhotoModel
 import us.cyberstar.presentation.feature.arFragment.view.ArFragmentImpl
+import us.cyberstar.presentation.feature.scenes.mainScene.arcore.scene.ArCoreSceneView
 import us.cyberstar.presentation.helpers.getPhotoThumbsMap
 import javax.inject.Inject
 
 class PhotoContentMakerImpl @Inject constructor(
+    private val arCoreSceneView: ArCoreSceneView,
     private val s3Cache: S3Cache,
     private val schedulersProvider: us.cyberstar.common.external.SchedulersProvider
 ) : PhotoContentMaker {
 
 
-    private lateinit var arView: ArFragmentImpl
-    //TODO find another way to make photo!
-    override fun provideArView(arView: ArFragmentImpl) {//dirty hack to provide SurfaceView
-        this.arView = arView
-    }
 
     //override val photoEmitter: BehaviorSubject<Bitmap> by lazy { BehaviorSubject.create<Bitmap>() }
 
@@ -34,7 +31,7 @@ class PhotoContentMakerImpl @Inject constructor(
     override fun makePhoto(): Single<ArPostPhotoModel> {
         return Single.create {
             Timber.d("making photo(surfaceView snapshot)")
-            val surfaceView = arView.arCoreSceneView.arSceneView
+            val surfaceView = arCoreSceneView.arSceneView
             val w = surfaceView.width
             val h = surfaceView.height
             val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)

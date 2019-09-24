@@ -69,7 +69,7 @@ class SettingsDevPresenter @Inject constructor(
     }
 
     fun toggleLoadWorld(start: Boolean) {
-        arSceneInitializer.loadWorld(start)
+      //  arSceneInitializer.loadWorld(start)
     }
 
     var debugInfoUpdateTimer: Timer? = null

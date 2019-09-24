@@ -15,8 +15,8 @@ import us.cyberstar.presentation.feature.arFragment.di.ArViewModule
 import us.cyberstar.presentation.feature.arFragment.view.ArFragmentImpl
 import us.cyberstar.presentation.feature.cameraView.di.CameraModule
 import us.cyberstar.presentation.feature.cameraView.view.CameraFragment
-import us.cyberstar.presentation.feature.cloudAnchor.di.CloudArModule
-import us.cyberstar.presentation.feature.cloudAnchor.view.CloudArFragment
+import us.cyberstar.presentation.feature.arSelfie.di.ArSelfieModule
+import us.cyberstar.presentation.feature.arSelfie.view.ArSelfieFragment
 import us.cyberstar.presentation.feature.postEdit.di.PostEditModule
 import us.cyberstar.presentation.feature.postEdit.view.PostEditFragment
 import us.cyberstar.presentation.feature.postOpenPhoto.di.PostOpenPhotoModule
@@ -89,8 +89,8 @@ abstract class MainViewModule {
 
 
     @PerFragment
-    @ContributesAndroidInjector(modules = [CloudArModule::class])
-    abstract fun provideCloudArFragmentFactory(): CloudArFragment
+    @ContributesAndroidInjector(modules = [ArSelfieModule::class])
+    abstract fun provideCloudArFragmentFactory(): ArSelfieFragment
 
 
     @PerFragment

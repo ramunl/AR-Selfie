@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.annotation.LayoutRes
 import com.cyber.ux.FootprintSelectionVisualizer
 import com.cyber.ux.SceneFormNodeProvider
+import com.google.ar.sceneform.collision.Box
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.*
 import kotlinx.android.synthetic.main.layout_ar_post_frame.view.*
@@ -34,6 +35,7 @@ class RenderableFactoryImpl @Inject constructor(
     private val gridWhite = R.layout.layout_cell_white
     private val gridRed = R.layout.layout_cell_red
     private val gridGreen = R.layout.layout_cell_green
+    private val postSelfieResLayout = R.layout.layout_ar_selfie
 
     override fun isRenderableLoaded(): Boolean =
         renderablesMap.size == cellColorsNum //&& sceneFormFootprint != null
@@ -56,13 +58,7 @@ class RenderableFactoryImpl @Inject constructor(
         title: String
     ) {
         viewRenderable.apply {
-            if (title.isBlank()) {
-                view.postEditText.visibility = GONE
-            } else {
-                view.postEditText.visibility = VISIBLE
-                view.postEditText.setText(title)
-            }
-            photoBitmap.let { view.postSnapshotImageView.setImageBitmap(it) }
+            // photoBitmap.let { view.postSnapshotImageView.setImageBitmap(it) }
         }
     }
 
@@ -74,24 +70,24 @@ class RenderableFactoryImpl @Inject constructor(
     ) {
         schedulersProvider.ui().scheduleDirect {
             Timber.e("loadPostRenderable on ui thread")
-            with(cellSizeSmall) {
-                ViewRenderable.builder()
-                    .setView(context, R.layout.layout_ar_post_frame)
-                    .setSizer { Vector3(x, y, 0.5f) }
-                    .build().thenAccept { renderable ->
-                        with(renderable) {
-                            isShadowCaster = false
-                            setupPostRenderable(this, bitmap, title)
-                            callback.onRenderableReady(this)
-                            Timber.e("post renderable created!")
-                        }
-
+            ViewRenderable.builder()
+                .setView(context, postSelfieResLayout)
+                .setSizer { Vector3(0.9f, 0.9f, 1f) }
+                .build().thenAccept { renderable ->
+                    with(renderable) {
+                       /* ((renderable.collisionShape!! as Box).size).also {
+                            setSizer { Vector3() }
+                        }*/
+                        isShadowCaster = false
+                        setupPostRenderable(this, bitmap, title)
+                        callback.onRenderableReady(this)
+                        Timber.e("post renderable created!")
                     }
-                    .exceptionally {
-                        Timber.e("Unable to load view renderable")
-                        null
-                    }
-            }
+                }
+                .exceptionally {
+                    Timber.e("Unable to load view renderable $it")
+                    null
+                }
         }
     }
 

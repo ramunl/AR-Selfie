@@ -7,6 +7,7 @@ import com.google.ar.sceneform.math.QuaternionEvaluator
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.math.Vector3Evaluator
 import us.cyberstar.data.ext.distanceFromNode
+import us.cyberstar.data.ext.distanceFromVector
 import us.cyberstar.domain.external.manger.arScene.ArGridManager
 import us.cyberstar.domain.external.provider.RootNodeProvider
 import us.cyberstar.domain.internal.model.*
@@ -19,14 +20,16 @@ import us.cyberstar.domain.internal.utils.asVector3
  * @param targetScale The desired final scale of the [Node] after the animation.
  */
 
-const val ANIM_DURATION_MS = 500L
+const val speed = 50f / (60f * 1000f) // 1m/sec s = v * t
 
 fun Node.playTranslateAnimation(
     property: String,
     source: FloatArray,
-    target: FloatArray,
-    duration: Long = ANIM_DURATION_MS
+    target: FloatArray
 ): ObjectAnimator {
+
+    val dist = source.asVector3().distanceFromVector(target.asVector3())
+    val duration: Long = 400//(dist / speed).toLong()
     val animator = ObjectAnimator().apply {
         setPropertyName(property)
         if (property.contains("Position") || property.contains("Scale")) {

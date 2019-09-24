@@ -358,7 +358,8 @@ class NodeManagerImpl @Inject constructor(
                         }
                     })
             } ?: { Timber.e("can't load bitmap for $arPostEntity") }()
-
+        } else {
+            Timber.e("can't create post, not trackable state!!!!!")
         }
     }
 
@@ -386,35 +387,6 @@ class NodeManagerImpl @Inject constructor(
         nodeFactoryCallback?.onNodeReady(node)
     }
 }
-
-
-/**
- * This methods creates a new post node and add it to scene.
- * If a node with this postId already added, it gets it from cache
- * @return created node
- */
-/* private fun doCreatePostNode(
-     arPostEntity: ArPostEntity,
-     nodeFactoryCallback: NodeFactoryCallback?
- ) {
-     Timber.d("Trying to create post node for id = ${arPostEntity.postId()}")
-     if (postExists(arPostEntity)) {
-         nodeFactoryCallback?.onNodeReady(currentNodeCreatedMap[arPostEntity.postId()] as PostNode)
-     } else {
-         Timber.d("..................doCreatePostNode common.....................")
-         getPostBitmap(arPostEntity)?.let {
-             renderableFactory.loadPostRenderable(
-                 arPostEntity.title,
-                 getPostBitmap(arPostEntity)!!,
-                 object : RenderableFactoryCallback {
-                     override fun onRenderableReady(viewRenderable: ViewRenderable) {
-                         onRenderableLoaded(viewRenderable, arPostEntity, nodeFactoryCallback)
-                     }
-                 })
-         } ?: { Timber.e("can't load bitmap for $arPostEntity") }()
-         //}
-     }
- }*/
 
 
 

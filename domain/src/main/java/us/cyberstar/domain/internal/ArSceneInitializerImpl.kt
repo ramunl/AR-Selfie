@@ -14,6 +14,7 @@ import us.cyberstar.domain.external.loader.grpc.telemetry.*
 import us.cyberstar.domain.external.manger.AugImgDbManger
 import us.cyberstar.domain.external.manger.VideoRecorderWrapper
 import us.cyberstar.domain.external.manger.arScene.MultiNodeManager
+import us.cyberstar.domain.external.manger.arScene.NodeManager
 import us.cyberstar.domain.external.provider.RootNodeProvider
 import us.cyberstar.domain.internal.manger.arScene.grid.HorGridManagerImpl
 import us.cyberstar.framerecorder.media.external.FPS_DEFAULT
@@ -29,6 +30,7 @@ import javax.inject.Inject
  * 3) switches recorder to local/remote
  */
 internal class ArSceneInitializerImpl @Inject constructor(
+    private val currentSessionNodeManager: NodeManager,
     private val rootNodeProvider: RootNodeProvider,
     private val horGridManager: HorGridManagerImpl,
     private val framerRecorderSettings: FrameRecorderSettings,
@@ -51,6 +53,13 @@ internal class ArSceneInitializerImpl @Inject constructor(
     private val telemetryRecorderFabric: TelemetryRecorderFabric,
     private val gpsCoordinatesListener: GPSCoordinatesListener
 ) : ArSceneInitializer {
+    override fun startTelemetry(withVideo: Boolean) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun stopTelemetry() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     var isTelemetryStarted: Boolean = false
 
@@ -78,27 +87,27 @@ internal class ArSceneInitializerImpl @Inject constructor(
         Timber.d("initScene")
         sessionIdProvider.resetUUID()
         gpsCoordinatesListener.registerListener()
-
-        multiNodeManager.subscribeToPostCreated()
-        planesEmitter.subscribeToArCoreFrames()
-        augmentedImageEmitter.subscribeToArCoreFrames()
-        augImgDbManger.subscribeToAssetForDetection()
+        //multiNodeManager.subscribeToPostCreated()
+        // planesEmitter.subscribeToArCoreFrames()
+        // augmentedImageEmitter.subscribeToArCoreFrames()
+        // augImgDbManger.subscribeToAssetForDetection()
         rootNodeProvider.nodeIsVisible = true
+        currentSessionNodeManager.subscribeToArCoreFrames()
     }
 
     override fun onDestroy() {
-
-        multiNodeManager.destroy()
-        planesEmitter.unsubscribeFromArCoreFrames()
-        augmentedImageEmitter.unsubscribeFromArCoreFrames()
-        augImgDbManger.unsubscribe()
+        currentSessionNodeManager.unsubscribeFromArCoreFrames()
+        //multiNodeManager.destroy()
+        //planesEmitter.unsubscribeFromArCoreFrames()
+        //  augmentedImageEmitter.unsubscribeFromArCoreFrames()
+        //  augImgDbManger.unsubscribe()
 
         gpsCoordinatesListener.unRegisterListener()
         sensorFrameEntityEmitter.stopListener()
         Timber.d("onDestroy")
-        stopTelemetry()
+        //stopTelemetry()
         compositeDisposable.clear()
-        augImgDbManger.removeImages()
+        //augImgDbManger.removeImages()
     }
 
     override fun loadWorld(isRunning: Boolean) {
@@ -122,57 +131,5 @@ internal class ArSceneInitializerImpl @Inject constructor(
          */
         multiNodeManager.unsubscribeFromPostCreated()
         multiNodeManager.subscribeToPostCreated()
-    }
-
-    private fun clearAll() {
-        Timber.d("clearAll")
-        dataFrameEntityEmitter.unsubscribeFromArCoreFrames()
-        multiNodeManager.unsubscribeFromPostCreated()
-        planesEmitter.unsubscribeFromArCoreFrames()
-        augmentedImageEmitter.unsubscribeFromArCoreFrames()
-        augImgDbManger.unsubscribe()
-        compositeDisposable.clear()
-    }
-
-    override fun startTelemetry(withVideo: Boolean) {
-        if (!isTelemetryStarted) {
-            isTelemetryStarted = true
-            val telemetryRecorder = telemetryRecorderFabric.getTelemetryRecorder()
-            schedulersProvider.io().scheduleDirect {
-                sessionIdProvider.resetUUID()
-                toggleSession(true)
-                deviceInfo.registerBatteryTemperature()
-                deviceInfo.registerLightListener()
-                dataFrameEntityEmitter.subscribeToArCoreFrames()
-                hardwareEntityEmitter.subscribeToArCoreFrames()
-                sensorFrameEntityEmitter.startListener()
-                telemetryRecorder.resetCounter()
-                headFinalEntityEmitter.createHeadSessionEntity { telemetryRecorder.startTelemetry(it) }
-                if (withVideo)
-                    videoRecorderWrapper.toggleRecorder(true)
-            }
-        }
-    }
-
-    override fun stopTelemetry() {
-        if (isTelemetryStarted) {
-            isTelemetryStarted = false
-            val telemetryRecorder = telemetryRecorderFabric.getTelemetryRecorder()
-            videoRecorderWrapper.toggleRecorder(false)
-            schedulersProvider.io().scheduleDirect(
-                {
-                    dataFrameEntityEmitter.unsubscribeFromArCoreFrames()
-                    videoRecorderWrapper.saveVideoToFile()
-                    arSessionStartTimeProvider.stopSession()
-                    hardwareEntityEmitter.unsubscribeFromArCoreFrames()
-                    deviceInfo.unregisterLightListener()
-                    deviceInfo.unRegisterBatteryTemperature()
-                    sensorFrameEntityEmitter.stopListener()
-                    telemetryRecorder.stopAndSaveTelemetry(headFinalEntityEmitter.getSessionFinalEntity())
-                    toggleSession(false)
-                },
-                2000, TimeUnit.MILLISECONDS
-            )
-        }
     }
 }
