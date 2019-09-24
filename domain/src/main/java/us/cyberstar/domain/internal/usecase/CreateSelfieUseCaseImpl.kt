@@ -86,7 +86,6 @@ class CreateSelfieUseCaseImpl(
             postContentEntity,
             true
         )
-        //controlMode.sceneMode = ControlMode.SceneMode.FACE_TO_CAMERA
         currentSessionNodeManager.addPostEntityToQueue(arPostEntity)
     }
 
@@ -137,7 +136,7 @@ class CreateSelfieUseCaseImpl(
         currentNode()?.let { currentNode ->
             var planeHit = false
             if (!isAnimating()) {
-                arCoreFrameEmitter.lastFrame()?.let { lastFrame ->
+                /*arCoreFrameEmitter.lastFrame()?.let { lastFrame ->
                     // if (lastFrame.camera.trackingState == TrackingState.TRACKING)
                     with(screenCenter(context)) {
                         val results = lastFrame.hitTest(x.toFloat(), y.toFloat())
@@ -151,14 +150,16 @@ class CreateSelfieUseCaseImpl(
                             }
                         }
                     }
-
-                    if (!planeHit) {
-                        if (controlMode.sceneMode != ControlMode.SceneMode.FACE_TO_CAMERA) {
-                            controlMode.sceneMode = ControlMode.SceneMode.FACE_TO_CAMERA
-                            controlModeListener?.onNext(controlMode)
+                }*/
+                when(controlMode.sceneMode) {
+                    ControlMode.SceneMode.IDLE -> {
+                        controlMode.sceneMode = ControlMode.SceneMode.FACE_TO_CAMERA
+                        controlModeListener?.onNext(controlMode)
+                    }
+                    ControlMode.SceneMode.FACE_TO_CAMERA -> {
+                        if (!planeHit) {
+                            schedulersProvider.ui().scheduleDirect {faceToCamera(arCoreScene.scene.camera, currentNode, null)}
                         }
-                        faceToCamera(arCoreScene.scene.camera, currentNode, null)
-                        //schedulersProvider.ui().scheduleDirect {}
                     }
                 }
             }

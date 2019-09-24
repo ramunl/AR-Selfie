@@ -72,12 +72,9 @@ class RenderableFactoryImpl @Inject constructor(
             Timber.e("loadPostRenderable on ui thread")
             ViewRenderable.builder()
                 .setView(context, postSelfieResLayout)
-                .setSizer { Vector3(0.9f, 0.9f, 1f) }
+                //.setSizer { Vector3(0.9f, 0.9f, 1f) }
                 .build().thenAccept { renderable ->
                     with(renderable) {
-                       /* ((renderable.collisionShape!! as Box).size).also {
-                            setSizer { Vector3() }
-                        }*/
                         isShadowCaster = false
                         setupPostRenderable(this, bitmap, title)
                         callback.onRenderableReady(this)

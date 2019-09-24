@@ -12,6 +12,8 @@ import com.google.ar.sceneform.collision.Box
 import com.google.ar.sceneform.collision.Ray
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
+import timber.log.Timber
+import us.cyberstar.common.external.SchedulersProvider
 import us.cyberstar.data.ext.distanceFromVector
 import us.cyberstar.data.ext.rotationQuaternion
 import us.cyberstar.data.ext.translationVector3
@@ -56,30 +58,13 @@ fun faceToCamera(
     noRotation: Boolean = false
 ) {
     if (!isAnimatingPos && !isAnimatingRot) {
-        //   Timber.d("faceToCamera $postNode")
-        //postNode.setLookDirection(camera.worldPosition)
-        //val localScale = (postNode as TransformableNode).localScale.x
-        val worldScale = (postNode as TransformableNode).worldScale.x
-        val size = (postNode.renderable!!.collisionShape!! as Box).size
-        val targetPosition = Vector3.add(
-            with(camera.worldPosition) { Vector3(x, y - (size.y * worldScale) / 2, z) }, camera.forward
-        )
-        /*val direction = Vector3.subtract(
-            camera.worldPosition,
-            targetPosition
-        )*/
-
-        //val direction = Vector3.subtract(camera.worldPosition, postNode.worldPosition)
-
-        val cardPosition = postNode.getWorldPosition()
-        val direction = Vector3.subtract(camera.worldPosition, cardPosition)
-        val lookRotation = Quaternion.lookRotation(direction, Vector3.up())
-        postNode.worldRotation = lookRotation
-        postNode.worldPosition = targetPosition
-       // val targetRotation = null//Quaternion.lookRotation(direction, Vector3.up())
-       // movePostNodeTo(postNode, targetPosition, targetRotation, animationEndListener)
-
-
+        val scale = (postNode as TransformableNode).worldScale.y
+        val size = (postNode.renderable!!.collisionShape!! as Box).size.y
+        val fakeCamPos = with(camera.worldPosition) { Vector3(x, y - scale * size / 2, z) }
+        val targetPosition = Vector3.add(fakeCamPos, camera.forward)
+        val direction = Vector3.subtract(fakeCamPos, postNode.worldPosition)
+        val targetRotation = Quaternion.lookRotation(direction, Vector3.up())
+        movePostNodeTo(postNode, targetPosition, targetRotation, animationEndListener)
     }
 }
 
@@ -143,9 +128,9 @@ fun movePostNodeTo(
     }
 
     if (!isAnimatingRot && targetRotation != null) {
-        //val rotDiff = abs(targetRotation.w - postNode.worldRotation.w)
-        //if (rotDiff > 0.0001f)
-        //{
+        Timber.d("targetRotation $targetRotation")
+        val rotDiff = abs(targetRotation.w - postNode.worldRotation.w)
+        if (rotDiff > 0.001f) {
             isAnimatingRot = true
             postNode.playTranslateAnimation(
                 "worldRotation",
@@ -163,7 +148,7 @@ fun movePostNodeTo(
                     }
                 }
             })
-        //}
+        }
 
     }
 }

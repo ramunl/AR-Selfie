@@ -16,6 +16,7 @@ import com.cyber.ux.TransformableNode
 import com.google.ar.core.Anchor
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.Node
+import com.google.ar.sceneform.collision.Box
 import com.google.ar.sceneform.rendering.Renderable
 import us.cyberstar.domain.external.arcore.ArCoreFrameEmitter
 import us.cyberstar.domain.external.arcore.ArCoreScene
@@ -188,7 +189,7 @@ class NodeManagerImpl @Inject constructor(
             Timber.w("create ArPost and add to scene called $arPostEntity")
             if (!postExists(arPostEntity)) {
                 if (arPostEntity.isAnchorId()) {
-                    if(CREATE_3D_ONLY) {
+                    if (CREATE_3D_ONLY) {
                         if (arPostEntity.isTransformable) {
                             doCreate3dNode(arPostEntity, object : NodeFactoryCallback {
                                 override fun onNodeReady(postNode: Node) {
@@ -347,20 +348,16 @@ class NodeManagerImpl @Inject constructor(
         nodeFactoryCallback: NodeFactoryCallback?
     ) {
         Timber.d("doCreatePostNode")
-        if (isTrackingState()) {
-            getPostBitmap(arPostEntity)?.let {
-                renderableFactory.loadPostRenderable(
-                    arPostEntity.title,
-                    getPostBitmap(arPostEntity)!!,
-                    object : RenderableFactoryCallback {
-                        override fun onRenderableReady(viewRenderable: ViewRenderable) {
-                            onRenderableLoaded(viewRenderable, arPostEntity, nodeFactoryCallback)
-                        }
-                    })
-            } ?: { Timber.e("can't load bitmap for $arPostEntity") }()
-        } else {
-            Timber.e("can't create post, not trackable state!!!!!")
-        }
+        getPostBitmap(arPostEntity)?.let {
+            renderableFactory.loadPostRenderable(
+                arPostEntity.title,
+                getPostBitmap(arPostEntity)!!,
+                object : RenderableFactoryCallback {
+                    override fun onRenderableReady(viewRenderable: ViewRenderable) {
+                        onRenderableLoaded(viewRenderable, arPostEntity, nodeFactoryCallback)
+                    }
+                })
+        } ?: { Timber.e("can't load bitmap for $arPostEntity") }()
     }
 
 
@@ -376,6 +373,8 @@ class NodeManagerImpl @Inject constructor(
             node = TransformableNode(sceneFormNodeProvider.transformationSystem).apply {
                 renderable = modelRenderable
                 select()
+                //val size = (renderable!!.collisionShape!! as Box).size.y
+               // localPosition.y = size/2
             }
         } else {
             node = PostNode(arPostEntity).also {

@@ -20,7 +20,7 @@ import us.cyberstar.domain.internal.utils.asVector3
  * @param targetScale The desired final scale of the [Node] after the animation.
  */
 
-const val speed = 50f / (60f * 1000f) // 1m/sec s = v * t
+const val speed = 100f / (60f * 1000f) // 1m/sec s = v * t
 
 fun Node.playTranslateAnimation(
     property: String,
@@ -28,14 +28,16 @@ fun Node.playTranslateAnimation(
     target: FloatArray
 ): ObjectAnimator {
 
-    val dist = source.asVector3().distanceFromVector(target.asVector3())
-    val duration: Long = 400//(dist / speed).toLong()
+    var duration: Long = 0
     val animator = ObjectAnimator().apply {
         setPropertyName(property)
         if (property.contains("Position") || property.contains("Scale")) {
             setObjectValues(source.asVector3(), target.asVector3())
             setEvaluator(Vector3Evaluator())
+            val dist = source.asVector3().distanceFromVector(target.asVector3())
+            duration = (dist / speed).toLong()
         } else {
+            duration = 200L
             setObjectValues(source.asQuaternion(), target.asQuaternion())
             setEvaluator(QuaternionEvaluator())
         }

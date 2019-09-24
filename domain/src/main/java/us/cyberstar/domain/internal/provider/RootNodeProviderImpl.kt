@@ -118,7 +118,7 @@ internal class RootNodeProviderImpl @Inject constructor(
 
     override fun getGrid() = getGridNode()
 
-    override var nodeIsVisible: Boolean = false
+    override var nodeIsVisible: Boolean = true
         set(value) {
             field = value
             if (rootNodeAnchor != null) {
